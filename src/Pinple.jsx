@@ -196,14 +196,14 @@ export default function Pinple({ currentProfile, setProfile }) {
       </div>
 
       {/* 탭 내용 영역 */}
-      <div style={{ flex: 1, position: "relative", overflow:"hidden"}}>
+      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
         {/* 🗺️ 1. 지도 탭 */}
         {activeTab === "map" && (
           <div style={{ width: "100%", height: "100%", position: "relative" }}>
             <Map
               center={{ lat: 35.1595, lng: 129.1602 }}
               style={{ width: "100%", height: "100%" }}
-              level={9}
+              level={8}
             >
               {/* 줌 컨트롤러 추가 */}
               <ZoomControl
@@ -390,7 +390,7 @@ export default function Pinple({ currentProfile, setProfile }) {
 
         {/* 📅 3. 캘린더 탭 */}
         {activeTab === "calendar" && (
-          <div style={{ padding: 20, height: "100%", overflowY: "auto" }}>
+          <div style={{ padding: 20, height: "100%", overflowY: "auto", background: "#f0f0f0"}}>
             <div
               style={{
                 maxWidth: 800,
@@ -435,9 +435,11 @@ export default function Pinple({ currentProfile, setProfile }) {
           </h2>
 
           <div
-            style={{
-             // 추가 예정(지금은 삭제)
-            }}
+            style={
+              {
+                // 추가 예정(지금은 삭제)
+              }
+            }
           >
             {/* 왼쪽 프로필 아이콘 (간단히 이모지로 대체) */}
             <div
@@ -489,8 +491,8 @@ export default function Pinple({ currentProfile, setProfile }) {
               {/* 하단 3개 네이비색 카드 */}
               <div
                 style={{
-                //추가 예정(지금은 삭제)
-                marginTop:"50px"
+                  //추가 예정(지금은 삭제)
+                  marginTop: "50px",
                 }}
               >
                 {[
@@ -514,9 +516,11 @@ export default function Pinple({ currentProfile, setProfile }) {
                 ].map((stat, idx) => (
                   <div
                     key={idx}
-                    style={{
-                      // 추가 예정(지금은 삭제)
-                    }}
+                    style={
+                      {
+                        // 추가 예정(지금은 삭제)
+                      }
+                    }
                   >
                     <div
                       style={{
@@ -622,7 +626,7 @@ export default function Pinple({ currentProfile, setProfile }) {
       {/* 하단 탭 내비게이션 */}
       <nav
         style={{
-          position:"fixed",
+          position: "fixed",
           bottom: 0,
           left: 0,
           width: "100%",

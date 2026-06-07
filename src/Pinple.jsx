@@ -353,7 +353,7 @@ export default function Pinple({ currentProfile, setProfile }) {
         {activeTab === "timeline" && (
           <div
             style={{
-              padding: 20,
+              padding: "20px 20px 85px 20px",
               overflowY: "auto",
               height: "100%",
               boxSizing: "border-box",
@@ -418,10 +418,13 @@ export default function Pinple({ currentProfile, setProfile }) {
       {activeTab === "dashboard" && (
         <div
           style={{
-            padding: 20,
+            padding: "20px 20px 85px 20px", // 하단 탭 가림 방지
             height: "100%",
             overflowY: "auto",
             background: "#f0f0f0",
+            boxSizing: "border-box",
+            display: "flex", //세로 배치
+            flexDirection: "column", //위에서 아래로 정렬
           }}
         >
           <h2 style={{ borderBottom: "2px solid #e50914", paddingBottom: 10 }}>
@@ -430,13 +433,13 @@ export default function Pinple({ currentProfile, setProfile }) {
 
           <div
             style={{
+              flex: 1,
               display: "flex",
               gap: "20px",
               background: "white",
               padding: 20,
               borderRadius: 15,
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              height:"100%"
             }}
           >
             {/* 왼쪽 프로필 아이콘 (간단히 이모지로 대체) */}
@@ -459,7 +462,7 @@ export default function Pinple({ currentProfile, setProfile }) {
             </div>
 
             {/* 오른쪽 인사이트 영역 */}
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, display:"flex", flexDirection:"column" }}>
               <h3 style={{ margin: "0 0 10px 0" }}>AI 추억 인사이트</h3>
               <div
                 style={{
@@ -488,7 +491,7 @@ export default function Pinple({ currentProfile, setProfile }) {
                       : "요약하기"}
                   </button>
                 ) : (
-                  <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                  <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6", fontSize:"16px"}}>
                     {aiInsight}
                   </p>
                 )}

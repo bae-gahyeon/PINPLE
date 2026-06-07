@@ -436,115 +436,119 @@ export default function Pinple({ currentProfile, setProfile }) {
               padding: 20,
               borderRadius: 15,
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              height:"100%"
             }}
           >
             {/* 왼쪽 프로필 아이콘 (간단히 이모지로 대체) */}
-            <div
-              style={{
-                width: 100,
-                height: 100,
-                background: "#f9dcdc",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "3rem",
-              }}
-            >
-              🧑‍💻
-            </div>
-            선택한 프로필 아이콘으로 변경 예정
-          </div>
-
-          {/* 오른쪽 인사이트 영역 */}
-          <div style={{ flex: 1 }}>
-            <h3 style={{ margin: "0 0 10px 0" }}>AI 추억 인사이트</h3>
-            <div
-              style={{
-                minHeight: "80px",
-                lineHeight: "1.6",
-                color: "#333",
-                marginBottom: 20,
-              }}
-            >
-              {!aiInsight ? (
-                <button
-                  onClick={analyzeWithGemini} // AI 함수 연결
-                  style={{
-                    padding: "10px 20px",
-                    background: "rgb(86, 145, 255)",
-                    color: "white",
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                  disabled={isAnalyzing} // 분석 중일 땐 버튼 여러 번 못 누르게 막기
-                >
-                  {isAnalyzing
-                    ? "Gemini AI가 데이터를 분석 중입니다... "
-                    : "요약하기"}
-                </button>
-              ) : (
-                <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
-                  {aiInsight}
-                </p>
-              )}
+            <div style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  width: 100,
+                  height: 100,
+                  background: "#f9dcdc",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "3rem",
+                  margin: "0 auto 10px auto",
+                }}
+              >
+                추가 예정
+              </div>
             </div>
 
-            {/* 하단 3개 네이비색 카드 */}
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                justifyContent: "space-between",
-                marginTop: "50px",
-              }}
-            >
-              {[
-                {
-                  title: "자주 방문한 지역",
-                  // value:
-                  //   savedRecords.length > 0
-                  //     ? savedRecords[0].placeName.split(" ")[0]
-                  //     : "-",
-                  value: "추가 예정",
-                },
-                {
-                  title: "평균 지출",
-                  // value:
-                  //   savedRecords.length > 0
-                  //     ? `${Math.round(savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) / savedRecords.length).toLocaleString()}원`
-                  //     : "0원",
-                  value: "추가 예정",
-                },
-                { title: "최다 방문 카테고리", value: "추가 예정" },
-              ].map((stat, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    flex: 1,
-                    background: "#0b1031",
-                    color: "white",
-                    padding: "15px 10px",
-                    borderRadius: 10,
-                    textAlign: "center",
-                  }}
-                >
-                  <div
+            {/* 오른쪽 인사이트 영역 */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: "0 0 10px 0" }}>AI 추억 인사이트</h3>
+              <div
+                style={{
+                  minHeight: "80px",
+                  lineHeight: "1.6",
+                  color: "#333",
+                  marginBottom: 20,
+                }}
+              >
+                {!aiInsight ? (
+                  <button
+                    onClick={analyzeWithGemini} // AI 함수 연결
                     style={{
-                      fontSize: "11px",
-                      color: "#aaa",
-                      marginBottom: 8,
+                      padding: "10px 20px",
+                      background: "rgb(86, 145, 255)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    disabled={isAnalyzing} // 분석 중일 땐 버튼 여러 번 못 누르게 막기
+                  >
+                    {isAnalyzing
+                      ? "Gemini AI가 데이터를 분석 중입니다... "
+                      : "요약하기"}
+                  </button>
+                ) : (
+                  <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                    {aiInsight}
+                  </p>
+                )}
+              </div>
+
+              {/* 하단 3개 네이비색 카드 */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  width: "100%",
+                  marginTop: "auto",
+                }}
+              >
+                {[
+                  {
+                    title: "자주 방문한 지역",
+                    // value:
+                    //   savedRecords.length > 0
+                    //     ? savedRecords[0].placeName.split(" ")[0]
+                    //     : "-",
+                    value: "추가 예정",
+                  },
+                  {
+                    title: "평균 지출",
+                    // value:
+                    //   savedRecords.length > 0
+                    //     ? `${Math.round(savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) / savedRecords.length).toLocaleString()}원`
+                    //     : "0원",
+                    value: "추가 예정",
+                  },
+                  { title: "최다 방문 카테고리", value: "추가 예정" },
+                ].map((stat, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      flex: 1,
+                      background: "#0b1031",
+                      color: "white",
+                      padding: "15px 10px",
+                      borderRadius: 10,
+                      textAlign: "center",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   >
-                    {stat.title}
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#aaa",
+                        marginBottom: 8,
+                      }}
+                    >
+                      {stat.title}
+                    </div>
+                    <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                      {stat.value}
+                    </div>
                   </div>
-                  <div style={{ fontSize: "16px", fontWeight: "bold" }}>
-                    {stat.value}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

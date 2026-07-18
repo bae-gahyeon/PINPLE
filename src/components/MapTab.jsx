@@ -1,0 +1,188 @@
+// src/MapTab.jsx
+import { useState } from "react";
+import {
+  Map,
+  MapMarker,
+  CustomOverlayMap,
+  ZoomControl,
+} from "react-kakao-maps-sdk";
+
+export default function MapTab({
+  savedRecords,
+  setSelectedPlace,
+  setIsModalOpen,
+}) {
+  // 지도 안에서만 사용되는 상태들
+  const [keyword, setKeyword] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  // (열려있는 말풍선 ID 기억하기)
+  const [openMarkerId, setOpenMarkerId] = useState(null);
+
+  // 2. 카카오맵 장소 검색
+  const searchPlaces = (e) => {
+    e?.preventDefault();
+    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.services)
+      return;
+
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(keyword, (data, status) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setSearchResults(data);
+      } else {
+        alert("검색 결과가 없습니다.");
+      }
+    });
+  };
+
+  // 필터링: 저장된 장소는 검색 결과(파란 핀)에서 빼기
+  const savedNames = savedRecords.map((r) => r.placeName);
+  const filteredPlaces = searchResults.filter(
+    (p) => !savedNames.includes(p.place_name),
+  );
+
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <Map
+        center={{ lat: 35.1595, lng: 129.1602 }}
+        style={{ width: "100%", height: "100%" }}
+        level={8}
+      >
+        {/* 줌 컨트롤러 추가 */}
+        <ZoomControl
+          position={window.kakao.maps.ControlPosition.RIGHT}
+        ></ZoomControl>
+        {/* 내 저장 기록 (빨간 핀) */}
+        {savedRecords.map((record) => (
+          <MapMarker
+            key={record.id}
+            position={{ lat: record.lat, lng: record.lng }}
+            image={{
+              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
+              size: { width: 31, height: 35 },
+            }}
+            onClick={() => setOpenMarkerId(record.id)} // 💡 클릭하면 alert 대신 ID를 저장!
+          />
+        ))}
+
+        {/*  클릭하면 뜨는 말풍선 (CustomOverlayMap) */}
+        {savedRecords.map(
+          (record) =>
+            openMarkerId === record.id && (
+              <CustomOverlayMap
+                key={`overlay-${record.id}`}
+                position={{ lat: record.lat, lng: record.lng }}
+                yAnchor={1.3} // 마커 살짝 위쪽으로 띄우기
+              >
+                <div
+                  style={{
+                    padding: "10px",
+                    background: "white",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                    minWidth: "120px",
+                  }}
+                >
+                  <strong
+                    style={{
+                      display: "block",
+                      color: "#000000",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    {record.placeName}
+                  </strong>
+                  <span style={{ fontSize: "13px" }}>{record.date}</span>
+                  <br />
+                  <br />
+                  <span style={{ fontSize: "13px" }}>🧾 {record.cost}원</span>
+                  <br />
+                  <span style={{ fontSize: "12px", color: "gray" }}>
+                    📝 {record.memo}
+                  </span>
+                  <br />
+                  <button
+                    onClick={() => setOpenMarkerId(null)}
+                    style={{
+                      marginTop: "8px",
+                      padding: "3px 10px",
+                      border: "none",
+                      background: "#eee",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    닫기
+                  </button>
+                </div>
+              </CustomOverlayMap>
+            ),
+        )}
+
+        {/* 검색 결과 (기본 파란 핀) */}
+        {filteredPlaces.map((place, i) => (
+          <MapMarker
+            key={i}
+            position={{ lat: place.y, lng: place.x }}
+            onClick={() => {
+              setSelectedPlace(place);
+              setIsModalOpen(true);
+            }}
+          />
+        ))}
+      </Map>
+
+      {/* 좌측 검색창 */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 2,
+          background: "rgba(255,255,255,0.9)",
+          padding: 10,
+          borderRadius: 8,
+          border: "1px solid #ccc",
+        }}
+      >
+        <form onSubmit={searchPlaces} style={{ display: "flex", gap: "8px" }}>
+          <input
+            placeholder="장소 검색.."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            style={{
+              padding: "6px",
+            }}
+            size="12"
+          />
+          <button type="submit">검색</button>
+        </form>
+        <ul
+          style={{
+            maxHeight: 300,
+            overflowY: "auto",
+            paddingLeft: 0,
+            marginTop: 10,
+          }}
+        >
+          {filteredPlaces.map((p, i) => (
+            <li
+              key={i}
+              onClick={() => {
+                setSelectedPlace(p);
+                setIsModalOpen(true);
+              }}
+              style={{
+                cursor: "pointer",
+                borderBottom: "1px solid #ccc",
+                padding: "5px 0",
+              }}
+            >
+              {p.place_name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}

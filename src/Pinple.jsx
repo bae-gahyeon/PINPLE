@@ -136,30 +136,6 @@ export default function Pinple({ currentProfile, setProfile }) {
     });
   };
 
-  // 3. 데이터 저장
-  const handleSave = () => {
-    if (!date || !cost || !memo) return alert("항목을 모두 입력해주세요!");
-
-    db.collection("diary_records")
-      .add({
-        profileName: currentProfile,
-        placeName: selectedPlace.place_name,
-        lat: selectedPlace.y,
-        lng: selectedPlace.x,
-        date,
-        cost,
-        memo,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      .then(() => {
-        alert("저장되었습니다!");
-        setIsModalOpen(false);
-        setDate("");
-        setCost("");
-        setMemo("");
-        fetchRecords(); // 저장 후 목록 갱신! (새로고침 불필요)
-      });
-  };
 
   // 필터링: 저장된 장소는 검색 결과(파란 핀)에서 빼기
   const savedNames = savedRecords.map((r) => r.placeName);

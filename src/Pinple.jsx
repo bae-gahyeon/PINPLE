@@ -180,8 +180,8 @@ export default function Pinple({ currentProfile, setProfile }) {
       <div
         style={{ padding: "10px", textAlign: "center", position: "relative" }}
       >
-        <h1 style={{ color: "#e50914", margin: "10px 0", fontWeight: "bold" }}>
-          MAPFLIX
+        <h1 style={{ margin: "10px 0", fontWeight: "bold" }}>
+          <span style={{ color: "red" }}>M</span>APFLIX
         </h1>
         <h3>장소를 검색하고 기록을 추가하세요.</h3>
         <button
@@ -353,18 +353,18 @@ export default function Pinple({ currentProfile, setProfile }) {
         {activeTab === "timeline" && (
           <div
             style={{
-              padding: 20,
+              padding: "20px 20px 85px 20px",
               overflowY: "auto",
               height: "100%",
               boxSizing: "border-box",
               background: "#f9f9f9",
             }}
           >
-            <h3
+            <h2
               style={{ borderBottom: "2px solid #e50914", paddingBottom: 10 }}
             >
               내 기록 타임라인
-            </h3>
+            </h2>
             {savedRecords.map((r) => (
               <div
                 key={r.id}
@@ -390,7 +390,7 @@ export default function Pinple({ currentProfile, setProfile }) {
 
         {/* 📅 3. 캘린더 탭 */}
         {activeTab === "calendar" && (
-          <div style={{ padding: 20, height: "100%", overflowY: "auto", background: "#f0f0f0"}}>
+          <div style={{ padding: "20px 20px 85px 20px", height: "100%", overflowY: "auto", background: "#f0f0f0"}}>
             <div
               style={{
                 maxWidth: 800,
@@ -418,46 +418,51 @@ export default function Pinple({ currentProfile, setProfile }) {
       {activeTab === "dashboard" && (
         <div
           style={{
-            padding: 20,
+            padding: "20px 20px 85px 20px", // 하단 탭 가림 방지
             height: "100%",
             overflowY: "auto",
             background: "#f0f0f0",
+            boxSizing: "border-box",
+            display: "flex", //세로 배치
+            flexDirection: "column", //위에서 아래로 정렬
           }}
         >
-          <h2
-            style={{
-              marginBottom: 20,
-              borderBottom: "2px solid #ccc",
-              paddingBottom: 10,
-            }}
-          >
+          <h2 style={{ borderBottom: "2px solid #e50914", paddingBottom: 10 }}>
             요약 대시보드
           </h2>
 
           <div
-            style={
-              {
-                // 추가 예정(지금은 삭제)
-              }
-            }
+            style={{
+              flex: 1,
+              display: "flex",
+              gap: "20px",
+              background: "white",
+              padding: 20,
+              borderRadius: 15,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            }}
           >
             {/* 왼쪽 프로필 아이콘 (간단히 이모지로 대체) */}
-            <div
-              style={{
-                width: 100,
-                height: 100,
-                background: "#f9dcdc",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              선택한 프로필 아이콘으로 변경 예정
+            <div style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  width: 100,
+                  height: 100,
+                  background: "#f9dcdc",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "3rem",
+                  margin: "0 auto 10px auto",
+                }}
+              >
+                추가 예정
+              </div>
             </div>
 
             {/* 오른쪽 인사이트 영역 */}
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, display:"flex", flexDirection:"column" }}>
               <h3 style={{ margin: "0 0 10px 0" }}>AI 추억 인사이트</h3>
               <div
                 style={{
@@ -470,11 +475,15 @@ export default function Pinple({ currentProfile, setProfile }) {
                 {!aiInsight ? (
                   <button
                     onClick={analyzeWithGemini} // AI 함수 연결
-                    style={
-                      {
-                        // 추가 예정(지금은 삭제)
-                      }
-                    }
+                    style={{
+                      padding: "10px 20px",
+                      background: "rgb(86, 145, 255)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: 8,
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
                     disabled={isAnalyzing} // 분석 중일 땐 버튼 여러 번 못 누르게 막기
                   >
                     {isAnalyzing
@@ -482,7 +491,7 @@ export default function Pinple({ currentProfile, setProfile }) {
                       : "요약하기"}
                   </button>
                 ) : (
-                  <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6" }}>
+                  <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.6", fontSize:"16px"}}>
                     {aiInsight}
                   </p>
                 )}
@@ -491,8 +500,10 @@ export default function Pinple({ currentProfile, setProfile }) {
               {/* 하단 3개 네이비색 카드 */}
               <div
                 style={{
-                  //추가 예정(지금은 삭제)
-                  marginTop: "50px",
+                  display: "flex",
+                  gap: "10px",
+                  width: "100%",
+                  marginTop: "auto",
                 }}
               >
                 {[
@@ -516,11 +527,15 @@ export default function Pinple({ currentProfile, setProfile }) {
                 ].map((stat, idx) => (
                   <div
                     key={idx}
-                    style={
-                      {
-                        // 추가 예정(지금은 삭제)
-                      }
-                    }
+                    style={{
+                      flex: 1,
+                      background: "#0b1031",
+                      color: "white",
+                      padding: "15px 10px",
+                      borderRadius: 10,
+                      textAlign: "center",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                    }}
                   >
                     <div
                       style={{

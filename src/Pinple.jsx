@@ -86,7 +86,10 @@ export default function Pinple({ currentProfile, setProfile }) {
 
         {/* ⏳ 2. 타임라인 탭 */}
         {activeTab === "timeline" && (
-          <TimelineTab savedRecords={savedRecords} />
+          <TimelineTab 
+          savedRecords={savedRecords} 
+          fetchRecords={fetchRecords} // 삭제 후 새로고침
+          />
         )}
 
         {/* 📅 3. 캘린더 탭 부품 */}

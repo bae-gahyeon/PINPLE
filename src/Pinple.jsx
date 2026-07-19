@@ -80,6 +80,7 @@ export default function Pinple({ currentProfile, setProfile }) {
             savedRecords={savedRecords}
             setSelectedPlace={setSelectedPlace}
             setIsModalOpen={setIsModalOpen}
+            selectedPlace={selectedPlace}
           />
         )}
 

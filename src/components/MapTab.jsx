@@ -11,12 +11,16 @@ export default function MapTab({
   savedRecords,
   setSelectedPlace,
   setIsModalOpen,
+  selectedPlace,
 }) {
   // 지도 안에서만 사용되는 상태들
   const [keyword, setKeyword] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   // (열려있는 말풍선 ID 기억하기)
   const [openMarkerId, setOpenMarkerId] = useState(null);
+
+  //지도 중심 좌표 관리하는 상태(기본값: 부산 해운대)
+  const [mapCenter, setMapCenter] = useState({ lat: 35.1595, lng: 129.1602 });
 
   // 2. 카카오맵 장소 검색
   const searchPlaces = (e) => {
@@ -42,10 +46,11 @@ export default function MapTab({
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* 지도 center를 mapCenter 상태로 연결 */}
       <Map
-        center={{ lat: 35.1595, lng: 129.1602 }}
+        center={mapCenter}
         style={{ width: "100%", height: "100%" }}
-        level={8}
+        level={5}
       >
         {/* 줌 컨트롤러 추가 */}
         <ZoomControl
@@ -119,6 +124,44 @@ export default function MapTab({
             ),
         )}
 
+        {/* 검색 리스트에서 누른 장소에 [기록하기] 팝업 띄우기 */}
+        {selectedPlace && (
+          <CustomOverlayMap
+            position={{ lat: selectedPlace.y, lng: selectedPlace.x }}
+            yAnchor={1.3}
+          >
+            <div
+              style={{
+                padding: "10px",
+                background: "white",
+                borderRadius: "8px",
+                border: "2px solid #0b1031",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                textAlign: "center",
+                zIndex: 10,
+              }}
+            >
+              <strong style={{ display: "block", marginBottom: "8px" }}>
+                {selectedPlace.place_name}
+              </strong>
+              <button
+                onClick={() => setIsModalOpen(true)} // 여기서 모달창 오픈
+                style={{
+                  background: "rgb(137, 178, 255)",
+                  color: "black",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                📝 기록
+              </button>
+            </div>
+          </CustomOverlayMap>
+        )}
+
         {/* 검색 결과 (기본 파란 핀) */}
         {filteredPlaces.map((place, i) => (
           <MapMarker
@@ -126,7 +169,7 @@ export default function MapTab({
             position={{ lat: place.y, lng: place.x }}
             onClick={() => {
               setSelectedPlace(place);
-              setIsModalOpen(true);
+              setMapCenter({ lat: place.y, lng: place.x });
             }}
           />
         ))}
@@ -170,7 +213,7 @@ export default function MapTab({
               key={i}
               onClick={() => {
                 setSelectedPlace(p);
-                setIsModalOpen(true);
+                setMapCenter({ lat: p.y, lng: p.x });
               }}
               style={{
                 cursor: "pointer",
@@ -178,7 +221,15 @@ export default function MapTab({
                 padding: "5px 0",
               }}
             >
-              {p.place_name}
+              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                {p.place_name}
+              </div>
+              {/* 주소 추가 */}
+              <div
+                style={{ fontSize: "12px", color: "gray", marginTop: "4px" }}
+              >
+                {p.address_name}
+              </div>
             </li>
           ))}
         </ul>

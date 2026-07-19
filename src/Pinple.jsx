@@ -15,7 +15,6 @@ import TimelineTab from "./components/TimelineTab";
 import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
-import RecordModal from "./components/RecordModal";
 
 export default function Pinple({ currentProfile, setProfile }) {
   const [activeTab, setActiveTab] = useState("map");

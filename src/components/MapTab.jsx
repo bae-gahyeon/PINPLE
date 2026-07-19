@@ -6,12 +6,14 @@ import {
   CustomOverlayMap,
   ZoomControl,
 } from "react-kakao-maps-sdk";
+import { db } from "./firebase";
 
 export default function MapTab({
   savedRecords,
   setSelectedPlace,
   setIsModalOpen,
   selectedPlace,
+  fetchRecords,
 }) {
   // 지도 안에서만 사용되는 상태들
   const [keyword, setKeyword] = useState("");
@@ -80,14 +82,31 @@ export default function MapTab({
               >
                 <div
                   style={{
-                    padding: "10px",
+                    position: "relative", // x버튼 절대 위치
+                    padding: "15px",
                     background: "white",
                     borderRadius: "8px",
                     border: "1px solid #ddd",
                     boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                    minWidth: "120px",
+                    minWidth: "140px",
                   }}
                 >
+                  <button
+                    onClick={() => setOpenMarkerId(null)}
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      border: "none",
+                      background: "transparent",
+                      fontSize: "14px",
+                      color: "#888",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ✕
+                  </button>
+
                   <strong
                     style={{
                       display: "block",
@@ -106,10 +125,11 @@ export default function MapTab({
                     📝 {record.memo}
                   </span>
                   <br />
+
                   <button
-                    onClick={() => setOpenMarkerId(null)}
+                    onClick={() => handleDelete(record.id)}
                     style={{
-                      marginTop: "8px",
+                      marginTop:"15px",
                       padding: "3px 10px",
                       border: "none",
                       background: "#eee",
@@ -117,7 +137,7 @@ export default function MapTab({
                       cursor: "pointer",
                     }}
                   >
-                    닫기
+                    삭제
                   </button>
                 </div>
               </CustomOverlayMap>

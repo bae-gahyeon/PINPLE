@@ -1,4 +1,4 @@
-// src/CalendarTab.jsx
+// src/components/CalendarTab.jsx
 
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";

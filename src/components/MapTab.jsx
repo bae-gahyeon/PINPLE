@@ -1,4 +1,4 @@
-// src/MapTab.jsx
+// src/components/MapTab.jsx
 import { useState } from "react";
 import {
   Map,

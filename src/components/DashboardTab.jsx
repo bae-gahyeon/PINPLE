@@ -1,4 +1,4 @@
-// src/DashboardTab.jsx
+// src/components/DashboardTab.jsx
 import { useState } from "react";
 
 // AI 대시보드 상태

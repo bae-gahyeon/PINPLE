@@ -46,6 +46,18 @@ export default function MapTab({
     (p) => !savedNames.includes(p.place_name),
   );
 
+  const handleDelete = (id) => {
+    if (window.confirm("정말 이 기록을 삭제할까요?")) {
+      db.collection("diary_records")
+        .doc(id)
+        .delete()
+        .then(() => {
+          alert("삭제되었습니다.");
+          fetchRecords(); // 부모 새로고침 요청
+        });
+    }
+  };
+  
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       {/* 지도 center를 mapCenter 상태로 연결 */}

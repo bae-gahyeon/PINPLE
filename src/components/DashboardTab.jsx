@@ -187,11 +187,10 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               },
               {
                 title: "평균 지출",
-                // value:
-                //   savedRecords.length > 0
-                //     ? `${Math.round(savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) / savedRecords.length).toLocaleString()}원`
-                //     : "0원",
-                value: "추가 예정",
+                value:
+                  savedRecords.length > 0
+                    ? `${Math.round(savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) / savedRecords.length).toLocaleString()}원`
+                    : "0원",
               },
               { title: "최다 방문 카테고리", value: "추가 예정" },
             ].map((stat, idx) => (

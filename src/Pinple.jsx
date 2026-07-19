@@ -6,14 +6,13 @@ import {
   CustomOverlayMap,
   ZoomControl,
 } from "react-kakao-maps-sdk";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+
 import firebase from "firebase/compat/app";
 import { db } from "./components/firebase";
 
 import MapTab from "./components/MapTab";
-import TimelineTab from "./components/TimelineTab"; 
-// import CalendarTab from "./components/CalendarTab";
+import TimelineTab from "./components/TimelineTab";
+import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 // import RecordModal from "./components/RecordModal";
 
@@ -66,8 +65,8 @@ export default function Pinple({ currentProfile, setProfile }) {
       })
       .then(() => {
         alert("저장되었습니다!");
-        setIsModalOpen(false); 
-        fetchRecords(); 
+        setIsModalOpen(false);
+        fetchRecords();
       });
   };
 
@@ -98,197 +97,159 @@ export default function Pinple({ currentProfile, setProfile }) {
           프로필 변경
         </button>
       </div>
+      {/* {중앙 탭 내용 영역} */}
+      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        {/* {1. 분리한 MapTab 부품 끼워넣기} */}
+        {activeTab === "map" && (
+          <MapTab
+            savedRecords={savedRecords}
+            setSelectedPlace={setSelectedPlace}
+            setIsModalOpen={setIsModalOpen}
+          />
+        )}
 
-{/* {중앙 탭 내용 영역} */}
-<div style={{flex: 1, position: "relative", overflow: "hidden"}}>
+        {/* ⏳ 2. 타임라인 탭 */}
+        {activeTab === "timeline" && (
+          <TimelineTab savedRecords={savedRecords} />
+        )}
 
-{/* {1. 분리한 MapTab 부품 끼워넣기} */}
-{activeTab === "map" &&(
-  <MapTab
-  savedRecords={savedRecords}
-  setSelectedPlace={setSelectedPlace}
-  setIsModalOpen={setIsModalOpen}
-  />
-)}
+        {/* 📅 3. 캘린더 탭 부품 */}
+        {activeTab === "calendar" && (
+          <CalendarTab savedRecords={savedRecords} />
+        )}
 
-      {/* ⏳ 2. 타임라인 탭 */}
-      {activeTab === "timeline" && (
-        <TimelineTab
-        savedRecords={savedRecords}
-        />
-      )}
-
-      {/* 📅 3. 캘린더 탭 */}
-      {activeTab === "calendar" && (
+        {/* {4. 분리한 DashboardTab 부품 끼워넣기 */}
+        {activeTab === "dashboard" && (
+          <DashboardTab
+            savedRecords={savedRecords}
+            currentProfile={currentProfile}
+          />
+        )}
+      </div>
+      /* 모달창 (저장 UI) */
+      {isModalOpen && (
         <div
           style={{
-            padding: "20px 20px 85px 20px",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
             height: "100%",
-            overflowY: "auto",
-            background: "#f0f0f0",
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <div
             style={{
-              maxWidth: 800,
-              margin: "0 auto",
               background: "white",
               padding: 20,
               borderRadius: 10,
+              width: 350,
             }}
           >
-            <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={savedRecords.map((r) => ({
-                title: `${r.placeName} (${r.cost}원)`,
-                start: r.date,
-                color: "#180085",
-              }))}
-            />
+            <h3>장소 기록하기</h3>
+            <p>
+              📍 장소: <strong>{selectedPlace?.place_name}</strong>
+            </p>
+            <p>
+              📆 날짜:{" "}
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </p>
+            <p>
+              🧾 지출액:{" "}
+              <input
+                type="number"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+              />{" "}
+              원
+            </p>
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+              <button onClick={() => setCost(Number(cost || 0) + 1000)}>
+                +1천원
+              </button>
+              <button onClick={() => setCost(Number(cost || 0) + 5000)}>
+                +5천원
+              </button>
+              <button onClick={() => setCost(Number(cost || 0) + 10000)}>
+                +1만원
+              </button>
+              <button onClick={() => setCost("")}>초기화</button>
+            </div>
+            <p>
+              📝 메모:{" "}
+              <textarea
+                rows="3"
+                style={{ width: "100%" }}
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+              ></textarea>
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "10px",
+                marginTop: "20px",
+              }}
+            >
+              <button onClick={handleSave}>저장하기</button>
+              <button onClick={() => setIsModalOpen(false)}>닫기</button>
+            </div>
           </div>
         </div>
       )}
-
-      {/* {4. 분리한 DashboardTab 부품 끼워넣기 */}
-      { activeTab === "dashboard" && (
-        <DashboardTab
-        savedRecords={savedRecords}
-        currentProfile={currentProfile}
-        />
-      )}
-
-      </div> 
-
-  /* 모달창 (저장 UI) */
-  {
-    isModalOpen && (
-      <div
+      {/* 하단 탭 내비게이션 */}
+      <nav
         style={{
           position: "fixed",
-          top: 0,
+          bottom: 0,
           left: 0,
           width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.5)",
-          zIndex: 9999,
+          height: 65,
+          minHeight: 65 /* 최소 높이 65px로 고정 */,
+          flexShrink: 0 /* 위에서 내용이 길어져도 안 찌그러짐 */,
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          borderTop: "1px solid #e0e0e0",
+          background: "white",
+          zIndex: 9999,
         }}
       >
-        <div
-          style={{
-            background: "white",
-            padding: 20,
-            borderRadius: 10,
-            width: 350,
-          }}
-        >
-          <h3>장소 기록하기</h3>
-          <p>
-            📍 장소: <strong>{selectedPlace?.place_name}</strong>
-          </p>
-          <p>
-            📆 날짜:{" "}
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </p>
-          <p>
-            🧾 지출액:{" "}
-            <input
-              type="number"
-              value={cost}
-              onChange={(e) => setCost(e.target.value)}
-            />{" "}
-            원
-          </p>
-          <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-            <button onClick={() => setCost(Number(cost || 0) + 1000)}>
-              +1천원
-            </button>
-            <button onClick={() => setCost(Number(cost || 0) + 5000)}>
-              +5천원
-            </button>
-            <button onClick={() => setCost(Number(cost || 0) + 10000)}>
-              +1만원
-            </button>
-            <button onClick={() => setCost("")}>초기화</button>
-          </div>
-          <p>
-            📝 메모:{" "}
-            <textarea
-              rows="3"
-              style={{ width: "100%" }}
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-            ></textarea>
-          </p>
+        {["map", "timeline", "calendar", "dashboard"].map((tab) => (
           <div
+            key={tab}
+            onClick={() => setActiveTab(tab)}
             style={{
+              flex: 1,
               display: "flex",
-              justifyContent: "flex-end",
-              gap: "10px",
-              marginTop: "20px",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              color: activeTab === tab ? "#e50914" : "#888",
+              fontWeight: activeTab === tab ? "bold" : "normal",
             }}
           >
-            <button onClick={handleSave}>저장하기</button>
-            <button onClick={() => setIsModalOpen(false)}>닫기</button>
+            {/* 아이콘 추가 예정 */}
+            <span style={{ fontSize: 12 }}>
+              {tab === "map"
+                ? "지도"
+                : tab === "timeline"
+                  ? "타임라인"
+                  : tab === "calendar"
+                    ? "캘린더"
+                    : "대시보드"}
+            </span>
           </div>
-        </div>
-      </div>
-  )}
-
-  {
-    /* 하단 탭 내비게이션 */
-  }
-  <nav
-    style={{
-      position: "fixed",
-      bottom: 0,
-      left: 0,
-      width: "100%",
-      height: 65,
-      minHeight: 65 /* 최소 높이 65px로 고정 */,
-      flexShrink: 0 /* 위에서 내용이 길어져도 안 찌그러짐 */,
-      display: "flex",
-      borderTop: "1px solid #e0e0e0",
-      background: "white",
-      zIndex: 9999,
-    }}
-  >
-    {["map", "timeline", "calendar", "dashboard"].map((tab) => (
-      <div
-        key={tab}
-        onClick={() => setActiveTab(tab)}
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          color: activeTab === tab ? "#e50914" : "#888",
-          fontWeight: activeTab === tab ? "bold" : "normal",
-        }}
-      >
-        {/* 아이콘 추가 예정 */}
-        <span style={{ fontSize: 12 }}>
-          {tab === "map"
-            ? "지도"
-            : tab === "timeline"
-              ? "타임라인"
-              : tab === "calendar"
-                ? "캘린더"
-                : "대시보드"}
-        </span>
-      </div>
-    ))}
-  </nav>
-
-  </div>
+        ))}
+      </nav>
+    </div>
   );
 }

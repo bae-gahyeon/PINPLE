@@ -76,9 +76,46 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
       setIsAnalyzing(false);
     }
   };
-  
+  // 1. 평균 지출 계산 함수(전체 비용 / 기록 개수)
+  const avgCost =
+    savedRecords.length > 0
+      ? Math.round(
+          savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) /
+            savedRecords.length,
+        )
+      : 0;
 
-    /* 📊 4. AI 요약 대시보드 탭 */ 
+  // 2. 가장 많이 등장한 단어(최빈값) 찾아주는 함수
+  const getTopItem = (arr) => {
+    if (arr.length === 0) return "-";
+    const counts = arr.reduce((acc, val) => {
+      if (val) acc[val] = (acc[val] || 0) + 1;
+      return acc;
+    }, {});
+    if (Object.keys(counts).length === 0) return "-";
+    // 개수가 가장 많은 키(단어)를 반환
+    return Object.keys(counts).reduce((a, b) =>
+      counts[a] > counts[b] ? a : b,
+    );
+  };
+
+  // 3. 자주 방문한 지역 (주소에서 '구' 단위 추출. 예: "부산 해운대구 우동 -> 해운대구")
+  const regions = savedRecords
+    .map((r) => {
+      if (!r.address) return null;
+      const parts = r.address.split(" ");
+      return parts.length > 1 ? parts[1] : parts[0];
+    })
+    .filter(Boolean);
+    
+  // 4. 최다 방문 카테고리 (예: "카페", "음식점")
+  const categories = savedRecords.map((r) => r.category).filter(Boolean);
+
+  // 카테고리 이름이 길면 첫 번째 항목만 자르기 (예: "음식점 > 한식" -> "음식점")
+  const formattedCategories = categories.map((c) => c.split(" > ")[0]);
+  const topCategory = getTopItem(formattedCategories);
+
+  /* 📊 4. AI 요약 대시보드 화면 렌더링 부분 */
   return (
     <div
       style={{
@@ -179,20 +216,13 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
             {[
               {
                 title: "자주 방문한 지역",
-                // value:
-                //   savedRecords.length > 0
-                //     ? savedRecords[0].placeName.split(" ")[0]
-                //     : "-",
-                value: "추가 예정",
+                value: topRegion,
               },
               {
                 title: "평균 지출",
-                value:
-                  savedRecords.length > 0
-                    ? `${Math.round(savedRecords.reduce((acc, cur) => acc + Number(cur.cost), 0) / savedRecords.length).toLocaleString()}원`
-                    : "0원",
+                value: `${avgCost.toLocaleString()}원`,
               },
-              { title: "최다 방문 카테고리", value: "추가 예정" },
+              { title: "최다 방문 카테고리", value: topCategory },
             ].map((stat, idx) => (
               <div
                 key={idx}

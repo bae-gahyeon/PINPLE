@@ -13,7 +13,6 @@ export default function RecordModal({
   const [cost, setCost] = useState("");
   const [memo, setMemo] = useState("");
 
-  //지워졌던 handlesave함수 복구(나중에 모달창 쪼갤때 가져감)
   const handleSave = () => {
     if (!date || !cost || !memo) return alert("항목을 모두 입력해주세요!");
 
@@ -23,6 +22,8 @@ export default function RecordModal({
         placeName: selectedPlace.place_name,
         lat: selectedPlace.y,
         lng: selectedPlace.x,
+        address: selectedPlace.address_name, // ex) "부산 해운대구 123"
+        category: selectedPlace.category_name, // ex) "카페", "음식"
         date,
         cost,
         memo,

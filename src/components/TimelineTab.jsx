@@ -45,14 +45,16 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
             onClick={() => handleDelete(r.id)}
             style={{
               position: "absolute",
+              margin: "3px",
+              width: "50px",
+              height: "30px",
               top: "10px",
               right: "10px",
-              background: "transparent",
-              border: "solid 1px",
+              background: "#eee",
               borderRadius: "8px",
               cursor: "pointer",
               fontSize: "16px",
-              margin: "5px",
+              border: "none",
             }}
             title="기록 삭제"
           >

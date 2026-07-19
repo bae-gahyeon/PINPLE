@@ -107,6 +107,8 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
       return parts.length > 1 ? parts[1] : parts[0];
     })
     .filter(Boolean);
+
+    const topRegion=getTopItem(regions);
     
   // 4. 최다 방문 카테고리 (예: "카페", "음식점")
   const categories = savedRecords.map((r) => r.category).filter(Boolean);

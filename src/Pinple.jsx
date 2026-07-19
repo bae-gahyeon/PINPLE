@@ -6,24 +6,23 @@ import {
   CustomOverlayMap,
   ZoomControl,
 } from "react-kakao-maps-sdk";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+
 import firebase from "firebase/compat/app";
 import { db } from "./components/firebase";
 
+import MapTab from "./components/MapTab";
+import TimelineTab from "./components/TimelineTab";
+import CalendarTab from "./components/CalendarTab";
+import DashboardTab from "./components/DashboardTab";
+import RecordModal from "./components/RecordModal";
+
 export default function Pinple({ currentProfile, setProfile }) {
   const [activeTab, setActiveTab] = useState("map");
-  
   const [savedRecords, setSavedRecords] = useState([]);
-  
 
   // 모달(입력창) 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const [date, setDate] = useState("");
-  const [cost, setCost] = useState("");
-  const [memo, setMemo] = useState("");
-  
 
   // 1. 파이어베이스에서 내 기록 불러오기
   const fetchRecords = () => {
@@ -45,7 +44,6 @@ export default function Pinple({ currentProfile, setProfile }) {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProfile]);
-
 
   return (
     <div
@@ -74,160 +72,44 @@ export default function Pinple({ currentProfile, setProfile }) {
           프로필 변경
         </button>
       </div>
-
-
-
-              
-
-            
+      {/* {중앙 탭 내용 영역} */}
+      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        {/* {1. 분리한 MapTab 부품 끼워넣기} */}
+        {activeTab === "map" && (
+          <MapTab
+            savedRecords={savedRecords}
+            setSelectedPlace={setSelectedPlace}
+            setIsModalOpen={setIsModalOpen}
+          />
+        )}
 
         {/* ⏳ 2. 타임라인 탭 */}
         {activeTab === "timeline" && (
-          <div
-            style={{
-              padding: "20px 20px 85px 20px",
-              overflowY: "auto",
-              height: "100%",
-              boxSizing: "border-box",
-              background: "#f9f9f9",
-            }}
-          >
-            <h2
-              style={{ borderBottom: "2px solid #e50914", paddingBottom: 10 }}
-            >
-              내 기록 타임라인
-            </h2>
-            {savedRecords.map((r) => (
-              <div
-                key={r.id}
-                style={{
-                  marginBottom: 15,
-                  padding: 10,
-                  background: "white",
-                  borderRadius: 8,
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-              >
-                <div style={{ fontSize: 12, color: "gray" }}>{r.date}</div>
-                <div style={{ fontWeight: "bold", fontSize: 16 }}>
-                  {r.placeName}
-                </div>
-                <br />
-                <div>💰 {r.cost}원</div>
-                <div style={{ color: "#555", marginTop: 5 }}>📝 {r.memo}</div>
-              </div>
-            ))}
-          </div>
+          <TimelineTab savedRecords={savedRecords} />
         )}
 
-        {/* 📅 3. 캘린더 탭 */}
+        {/* 📅 3. 캘린더 탭 부품 */}
         {activeTab === "calendar" && (
-          <div style={{ padding: "20px 20px 85px 20px", height: "100%", overflowY: "auto", background: "#f0f0f0"}}>
-            <div
-              style={{
-                maxWidth: 800,
-                margin: "0 auto",
-                background: "white",
-                padding: 20,
-                borderRadius: 10,
-              }}
-            >
-              <FullCalendar
-                plugins={[dayGridPlugin]}
-                initialView="dayGridMonth"
-                events={savedRecords.map((r) => ({
-                  title: `${r.placeName} (${r.cost}원)`,
-                  start: r.date,
-                  color: "#180085",
-                }))}
-              />
-            </div>
-          </div>
+          <CalendarTab savedRecords={savedRecords} />
+        )}
+
+        {/* {4. 분리한 DashboardTab 부품 끼워넣기 */}
+        {activeTab === "dashboard" && (
+          <DashboardTab
+            savedRecords={savedRecords}
+            currentProfile={currentProfile}
+          />
         )}
       </div>
-  )
-
       /* 모달창 (저장 UI) */
       {isModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: 20,
-              borderRadius: 10,
-              width: 350,
-            }}
-          >
-            <h3>장소 기록하기</h3>
-            <p>
-              📍 장소: <strong>{selectedPlace?.place_name}</strong>
-            </p>
-            <p>
-              📆 날짜:{" "}
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </p>
-            <p>
-              🧾 지출액:{" "}
-              <input
-                type="number"
-                value={cost}
-                onChange={(e) => setCost(e.target.value)}
-              />{" "}
-              원
-            </p>
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-              <button onClick={() => setCost(Number(cost || 0) + 1000)}>
-                +1천원
-              </button>
-              <button onClick={() => setCost(Number(cost || 0) + 5000)}>
-                +5천원
-              </button>
-              <button onClick={() => setCost(Number(cost || 0) + 10000)}>
-                +1만원
-              </button>
-              <button onClick={() => setCost("")}>초기화</button>
-            </div>
-            <p>
-              📝 메모:{" "}
-              <textarea
-                rows="3"
-                style={{ width: "100%" }}
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-              ></textarea>
-            </p>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: "10px",
-                marginTop: "20px",
-              }}
-            >
-              <button onClick={handleSave}>저장하기</button>
-              <button onClick={() => setIsModalOpen(false)}>닫기</button>
-            </div>
-          </div>
-        </div>
+        <RecordModal
+          selectedPlace={selectedPlace}
+          setIsModalOpen={setIsModalOpen}
+          currentProfile={currentProfile}
+          fetchRecords={fetchRecords}
+        />
       )}
-
       {/* 하단 탭 내비게이션 */}
       <nav
         style={{
@@ -272,4 +154,6 @@ export default function Pinple({ currentProfile, setProfile }) {
           </div>
         ))}
       </nav>
+    </div>
+  );
 }

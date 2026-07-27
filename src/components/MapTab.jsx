@@ -57,7 +57,7 @@ export default function MapTab({
         });
     }
   };
-  
+
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       {/* 지도 center를 mapCenter 상태로 연결 */}
@@ -141,7 +141,7 @@ export default function MapTab({
                   <button
                     onClick={() => handleDelete(record.id)}
                     style={{
-                      marginTop:"15px",
+                      marginTop: "15px",
                       padding: "3px 10px",
                       border: "none",
                       background: "#eee",
@@ -164,18 +164,37 @@ export default function MapTab({
           >
             <div
               style={{
-                padding: "10px",
+                padding: "30px 15px 15px 15px",
                 background: "white",
                 borderRadius: "8px",
                 border: "2px solid #0b1031",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
                 textAlign: "center",
                 zIndex: 10,
+                position: "relative",
               }}
             >
+              {/* x버튼 추가 */}
+              <button
+                onClick={() => setSelectedPlace(null)}
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "8px",
+                  border: "none",
+                  background: "transparent",
+                  fontSize: "14px",
+                  color: "#888",
+                  cursor: "pointer",
+                }}
+              >
+                ✕
+              </button>
+
               <strong style={{ display: "block", marginBottom: "8px" }}>
                 {selectedPlace.place_name}
               </strong>
+
               <button
                 onClick={() => setIsModalOpen(true)} // 여기서 모달창 오픈
                 style={{

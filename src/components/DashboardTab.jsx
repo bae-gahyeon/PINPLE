@@ -56,7 +56,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
       const data = await response.json();
       console.log("Gemini 응답 데이터:", data); // F12 콘솔창 확인용
 
-      // ! API 키 오류나 404 에러 시 뻗지 않고 화면에 메시지 띄움!
+      // ! API 키 오류나 404 에러 시 뻗지 않고 화면에 메시지 띄움
       if (!response.ok || data.error) {
         setAiInsight(
           `앗! AI 서버 통신에 문제가 생겼어요.\n(API 키를 다시 확인하거나 잠시 후 시도해주세요!)`,
@@ -117,7 +117,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
   const formattedCategories = categories.map((c) => c.split(" > ")[0]);
   const topCategory = getTopItem(formattedCategories);
 
-  /* 📊 4. AI 요약 대시보드 화면 렌더링 부분 */
+  /* 4. AI 요약 대시보드 화면 렌더링 부분 */
   return (
     <div
       style={{

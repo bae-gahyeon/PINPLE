@@ -41,7 +41,7 @@ export default function Profile({ setProfile }) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center", 
       }}
     >
       <h1 style={{ fontSize: "2.5rem", marginBottom: "2em" }}>

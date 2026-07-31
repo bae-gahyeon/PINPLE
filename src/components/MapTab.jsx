@@ -124,6 +124,7 @@ export default function MapTab({
                       display: "block",
                       color: "#000000",
                       marginBottom: "5px",
+                      fontSize: "15px",
                     }}
                   >
                     {record.placeName}
@@ -174,6 +175,27 @@ export default function MapTab({
                 position: "relative",
               }}
             >
+              {/* Flexbox 적용 - 장소 이름 왼쪽, x버튼 오른쪽 양쪽 정렬 */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginBottom: "12px",
+                }}
+              >
+                <strong
+                  style={{
+                    textAlign: "left",
+                    paddingRight: "10px",
+                    wordBreak: "keep-all",
+                    color: "#000",
+                  }}
+                >
+                  {selectedPlace.place_name}
+                </strong>
+              </div>
+
               {/* x버튼 추가 */}
               <button
                 onClick={() => setSelectedPlace(null)}
@@ -205,6 +227,7 @@ export default function MapTab({
                   borderRadius: "4px",
                   cursor: "pointer",
                   fontWeight: "bold",
+                  width: "100%",
                 }}
               >
                 📝 기록

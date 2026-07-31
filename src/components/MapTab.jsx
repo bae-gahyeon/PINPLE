@@ -227,7 +227,6 @@ export default function MapTab({
                   borderRadius: "4px",
                   cursor: "pointer",
                   fontWeight: "bold",
-                  width: "100%",
                 }}
               >
                 📝 기록

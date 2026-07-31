@@ -32,6 +32,7 @@ export default function RecordModal({
       .then(() => {
         alert("저장되었습니다!");
         setIsModalOpen(false);
+        setSelectedPlace(null);
         fetchRecords();
       });
   };

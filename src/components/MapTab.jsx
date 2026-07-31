@@ -60,11 +60,33 @@ export default function MapTab({
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* 텅 빈 지도 안내창(기록이 없을때만) */}
+      {savedRecords.length === 0 && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "rgba(229, 9,20,0.9)",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "30px",
+            fontSize: "15px",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+            zIndex: 999,
+            textAlign: "center",
+          }}
+        >
+          아직 기록한 곳이 없네요! <br /> 왼쪽 검색창에서 첫 장소를 찾아볼까요?
+        </div>
+      )}
+
       {/* 지도 center를 mapCenter 상태로 연결 */}
       <Map
         center={mapCenter}
         style={{ width: "100%", height: "100%" }}
-        level={5}
+        level={8}
       >
         {/* 줌 컨트롤러 추가 */}
         <ZoomControl

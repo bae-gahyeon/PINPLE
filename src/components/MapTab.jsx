@@ -187,14 +187,14 @@ export default function MapTab({
           >
             <div
               style={{
-                padding: "30px 15px 15px 15px",
+                padding: "15px",
                 background: "white",
                 borderRadius: "8px",
                 border: "2px solid #0b1031",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
                 textAlign: "center",
                 zIndex: 10,
-                position: "relative",
+                minWidth: "160px",
               }}
             >
               {/* Flexbox 적용 - 장소 이름 왼쪽, x버튼 오른쪽 양쪽 정렬 */}
@@ -202,7 +202,7 @@ export default function MapTab({
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "flex-start",
+                  alignItems: "center",
                   marginBottom: "12px",
                 }}
               >
@@ -212,32 +212,34 @@ export default function MapTab({
                     paddingRight: "10px",
                     wordBreak: "keep-all",
                     color: "#000",
+                    fontSize: "15px",
+                    lineHeight: 1,
+                    margin: 0,
                   }}
                 >
                   {selectedPlace.place_name}
                 </strong>
               </div>
 
-              {/* x버튼 추가 */}
+              {/* x버튼 flex 박스 안으로 */}
               <button
                 onClick={() => setSelectedPlace(null)}
                 style={{
-                  position: "absolute",
-                  top: "8px",
-                  right: "8px",
                   border: "none",
                   background: "transparent",
                   fontSize: "14px",
                   color: "#888",
                   cursor: "pointer",
+                  padding: 0,
+                  margin: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  lineHeight: 1,
                 }}
               >
                 ✕
               </button>
-
-              <strong style={{ display: "block", marginBottom: "8px" }}>
-                {selectedPlace.place_name}
-              </strong>
 
               <button
                 onClick={() => setIsModalOpen(true)} // 여기서 모달창 오픈

@@ -1,5 +1,5 @@
 // src/components/MapTab.jsx
-import { useState } from "react";
+import { act, useState } from "react";
 import {
   Map,
   MapMarker,
@@ -58,6 +58,28 @@ export default function MapTab({
     }
   };
 
+  // 현재 눌린 탭 기억
+  const [activeTab, setActiveTab] = useState("ALL");
+
+  // 선택된 탭에 따라 보여줄 기록만 필터링
+  const visibleRecords =
+    activeTab === "ALL"
+      ? savedRecords
+      : savedRecords.filter((record) => {
+          // 카테고리 정보가 아예 없으면 통과 X
+          if (!record.category) return false;
+
+          // 식당 탭 눌렀을 때 '음식점'은 포함, '카페'는 빼기
+          if (activeTab === "음식점") {
+            return (
+              record.category.includes("음식점") &&
+              !record.category.includes("카페")
+            );
+          }
+
+          return record.category.includes(activeTab);
+        });
+
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       {/* 텅 빈 지도 안내창(기록이 없을때만) */}
@@ -82,6 +104,27 @@ export default function MapTab({
         </div>
       )}
 
+      <div
+        style={{
+          position: "absolute",
+          top: "80px", //안내창이나 다른 요소와 안 겹치게 간격 확보
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          display: "flex",
+          gap: "10px",
+          background: "rgba(255,255,255,0.9)",
+          padding: "10px 15px",
+          borderRadius: "20px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        }}
+      >
+        <button onClick={() => setActiveTab("ALL")}>전체</button>
+        <button onClick={() => setActiveTab("음식점")}>식당</button>
+        <button onClick={() => setActiveTab("카페")}>카페</button>
+        <button onClick={() => setActiveTab("숙박")}>숙소</button>
+      </div>
+
       {/* 지도 center를 mapCenter 상태로 연결 */}
       <Map
         center={mapCenter}
@@ -93,7 +136,7 @@ export default function MapTab({
           position={window.kakao.maps.ControlPosition.RIGHT}
         ></ZoomControl>
         {/* 내 저장 기록 (빨간 핀) */}
-        {savedRecords.map((record) => (
+        {visibleRecords.map((record) => (
           <MapMarker
             key={record.id}
             position={{ lat: record.lat, lng: record.lng }}
@@ -106,7 +149,7 @@ export default function MapTab({
         ))}
 
         {/*  클릭하면 뜨는 말풍선 (CustomOverlayMap) */}
-        {savedRecords.map(
+        {visibleRecords.map(
           (record) =>
             openMarkerId === record.id && (
               <CustomOverlayMap

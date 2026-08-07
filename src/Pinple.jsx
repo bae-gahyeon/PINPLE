@@ -160,7 +160,7 @@ export default function Pinple({ currentProfile, setProfile }) {
             }}
           >
             {/* 아이콘 추가 예정 */}
-            <span style={{ fontSize: 12 }}>
+            <span style={{ fontSize: 18 }}>
               {tab === "map"
                 ? "지도"
                 : tab === "timeline"

@@ -6,8 +6,11 @@ import { db } from "./firebase";
 export default function RecordModal({
   selectedPlace,
   setIsModalOpen,
+  setSelectedPlace,
   currentProfile,
   fetchRecords,
+  setKeyword,
+  setSearchResults,
 }) {
   const [date, setDate] = useState("");
   const [cost, setCost] = useState("");
@@ -33,6 +36,8 @@ export default function RecordModal({
         alert("저장되었습니다!");
         setIsModalOpen(false);
         setSelectedPlace(null);
+        setKeyword(""); // 검색창 텍스트 날리기
+        setSearchResults([]); // 파란 핀들 날리기
         fetchRecords();
       });
   };

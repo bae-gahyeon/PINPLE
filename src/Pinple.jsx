@@ -24,6 +24,10 @@ export default function Pinple({ currentProfile, setProfile }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
+  // 지도 안에서만 사용되는 상태들
+  const [keyword, setKeyword] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   // 1. 파이어베이스에서 내 기록 불러오기
   const fetchRecords = () => {
     db.collection("diary_records")
@@ -82,14 +86,19 @@ export default function Pinple({ currentProfile, setProfile }) {
             setIsModalOpen={setIsModalOpen}
             selectedPlace={selectedPlace}
             fetchRecords={fetchRecords}
+            // MabTab으로 상태 전달
+            keyword={keyword}
+            setKeyword={setKeyword}
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
           />
         )}
 
         {/* ⏳ 2. 타임라인 탭 */}
         {activeTab === "timeline" && (
-          <TimelineTab 
-          savedRecords={savedRecords} 
-          fetchRecords={fetchRecords} // 삭제 후 새로고침
+          <TimelineTab
+            savedRecords={savedRecords}
+            fetchRecords={fetchRecords} // 삭제 후 새로고침
           />
         )}
 
@@ -106,13 +115,17 @@ export default function Pinple({ currentProfile, setProfile }) {
           />
         )}
       </div>
-      /* 모달창 (저장 UI) */
+      {/* 모달창 (저장 UI) */} 
       {isModalOpen && (
         <RecordModal
           selectedPlace={selectedPlace}
           setIsModalOpen={setIsModalOpen}
+          setSelectedPlace={setSelectedPlace}
           currentProfile={currentProfile}
           fetchRecords={fetchRecords}
+          // 검색 상태 전달 (비우기위해)
+          setKeyword={setKeyword}
+          setSearchResults={setSearchResults}
         />
       )}
       {/* 하단 탭 내비게이션 */}

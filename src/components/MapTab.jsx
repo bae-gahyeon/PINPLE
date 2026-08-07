@@ -14,10 +14,12 @@ export default function MapTab({
   setIsModalOpen,
   selectedPlace,
   fetchRecords,
+  // Pinple에서 받아옴
+  keyword,
+  setKeyword,
+  searchResults,
+  setSearchResults,
 }) {
-  // 지도 안에서만 사용되는 상태들
-  const [keyword, setKeyword] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   // (열려있는 말풍선 ID 기억하기)
   const [openMarkerId, setOpenMarkerId] = useState(null);
 
@@ -263,25 +265,25 @@ export default function MapTab({
                   {selectedPlace.place_name}
                 </strong>
 
-              {/* x버튼 flex 박스 안으로 */}
-              <button
-                onClick={() => setSelectedPlace(null)}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  fontSize: "14px",
-                  color: "#888",
-                  cursor: "pointer",
-                  padding: 0,
-                  margin: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  lineHeight: 1,
-                }}
-              >
-                ✕
-              </button>
+                {/* x버튼 flex 박스 안으로 */}
+                <button
+                  onClick={() => setSelectedPlace(null)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    fontSize: "14px",
+                    color: "#888",
+                    cursor: "pointer",
+                    padding: 0,
+                    margin: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1,
+                  }}
+                >
+                  ✕
+                </button>
               </div>
 
               <button
@@ -298,7 +300,7 @@ export default function MapTab({
               >
                 📝 기록
               </button>
-              </div>
+            </div>
           </CustomOverlayMap>
         )}
 

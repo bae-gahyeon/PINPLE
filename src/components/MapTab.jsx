@@ -124,6 +124,8 @@ export default function MapTab({
         <button onClick={() => setActiveTab("ALL")}>전체</button>
         <button onClick={() => setActiveTab("음식점")}>식당</button>
         <button onClick={() => setActiveTab("카페")}>카페</button>
+        <button onClick={() => setActiveTab("문화시설")}>문화</button>
+        <button onClick={() => setActiveTab("관광명소")}>관광</button>
         <button onClick={() => setActiveTab("숙박")}>숙소</button>
       </div>
 

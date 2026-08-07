@@ -262,7 +262,6 @@ export default function MapTab({
                 >
                   {selectedPlace.place_name}
                 </strong>
-              </div>
 
               {/* x버튼 flex 박스 안으로 */}
               <button
@@ -283,6 +282,7 @@ export default function MapTab({
               >
                 ✕
               </button>
+              </div>
 
               <button
                 onClick={() => setIsModalOpen(true)} // 여기서 모달창 오픈
@@ -298,7 +298,7 @@ export default function MapTab({
               >
                 📝 기록
               </button>
-            </div>
+              </div>
           </CustomOverlayMap>
         )}
 

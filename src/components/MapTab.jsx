@@ -1,5 +1,5 @@
 // src/components/MapTab.jsx
-import { act, useState } from "react";
+import { act, useEffect, useState } from "react";
 import {
   Map,
   MapMarker,
@@ -20,6 +20,19 @@ export default function MapTab({
   searchResults,
   setSearchResults,
 }) {
+  // PC vs 모바일 화면 감지 상태
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // 모바일에서 리스트 열기/닫기 토글 상태
+  const [isListOpen, setIsListOpen] = useState(true);
+
+  //화면 크기가 바뀔 때마다 isMobile 상태 업데이트
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // (열려있는 말풍선 ID 기억하기)
   const [openMarkerId, setOpenMarkerId] = useState(null);
 
@@ -36,6 +49,7 @@ export default function MapTab({
     ps.keywordSearch(keyword, (data, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
         setSearchResults(data);
+        setIsListOpen(true);
       } else {
         alert("검색 결과가 없습니다.");
       }
@@ -106,55 +120,64 @@ export default function MapTab({
         </div>
       )}
 
-      <div
-        style={{
-          position: "absolute",
-          top: "80px", //안내창이나 다른 요소와 안 겹치게 간격 확보
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-          display: "flex",
-          gap: "10px",
-          background: "rgba(255,255,255,0.9)",
-          padding: "10px 15px",
-          borderRadius: "20px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+      {/* 카테고리 필터링: 검색 결과가 없고, 검색어도 비어있을때만 등장 */}
+      {searchResults.length === 0 && !keyword && (
+        <div
+          style={{
+            position: "absolute",
+            top: "80px", //안내창이나 다른 요소와 안 겹치게 간격 확보
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10,
+            display: "flex",
+            gap: "10px",
+            background: "rgba(255,255,255,0.9)",
+            padding: "10px 15px",
+            borderRadius: "20px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
 
-          // 모바일 가로 스크롤
-          width: "max-content",
-          maxWidth: "90%",
-          overflow: "auto", // 가로 공간 부족하면 스크롤 생성
-          whiteSpace: "nowrap", // 버튼 1줄 고정
-        }}
-      >
-        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("ALL")}>
-          전체
-        </button>
-        <button
-          style={{ flexShrink: 0 }}
-          onClick={() => setActiveTab("음식점")}
+            // 모바일 가로 스크롤
+            width: "max-content",
+            maxWidth: "90%",
+            overflow: "auto", // 가로 공간 부족하면 스크롤 생성
+            whiteSpace: "nowrap", // 버튼 1줄 고정
+          }}
         >
-          식당
-        </button>
-        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("카페")}>
-          카페
-        </button>
-        <button
-          style={{ flexShrink: 0 }}
-          onClick={() => setActiveTab("문화시설")}
-        >
-          문화
-        </button>
-        <button
-          style={{ flexShrink: 0 }}
-          onClick={() => setActiveTab("관광명소")}
-        >
-          관광
-        </button>
-        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("숙박")}>
-          숙소
-        </button>
-      </div>
+          <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("ALL")}>
+            전체
+          </button>
+          <button
+            style={{ flexShrink: 0 }}
+            onClick={() => setActiveTab("음식점")}
+          >
+            식당
+          </button>
+          <button
+            style={{ flexShrink: 0 }}
+            onClick={() => setActiveTab("카페")}
+          >
+            카페
+          </button>
+          <button
+            style={{ flexShrink: 0 }}
+            onClick={() => setActiveTab("문화시설")}
+          >
+            문화
+          </button>
+          <button
+            style={{ flexShrink: 0 }}
+            onClick={() => setActiveTab("관광명소")}
+          >
+            관광
+          </button>
+          <button
+            style={{ flexShrink: 0 }}
+            onClick={() => setActiveTab("숙박")}
+          >
+            숙소
+          </button>
+        </div>
+      )}
 
       {/* 지도 center를 mapCenter 상태로 연결 */}
       <Map
@@ -178,7 +201,7 @@ export default function MapTab({
             onClick={() => {
               setOpenMarkerId(record.id); // 빨간 핀 열기
               setSelectedPlace(null); // 파란 핀 팝업 닫기
-            }} // 💡 클릭하면 alert 대신 ID를 저장!
+            }} // 클릭하면 alert 대신 ID를 저장!
           />
         ))}
 
@@ -350,64 +373,126 @@ export default function MapTab({
         ))}
       </Map>
 
-      {/* 좌측 검색창 */}
+      {/* PC/모바일 반응형 검색창 & 리스트 영역 */}
       <div
         style={{
           position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 2,
-          background: "rgba(255,255,255,0.9)",
-          padding: 10,
-          borderRadius: 8,
-          border: "1px solid #ccc",
+          top: isMobile ? 10 : 0, //모바일 살짝 띄우고 PC는 딱 붙임
+          left: isMobile ? 10 : 0,
+          width: isMobile ? "calc(100% - 20px)" : "300px", // 모바일 꽉 차게, PC는 좌측 사이드바
+          height: isMobile ? "auto" : "100%",
+          background: isMobile ? "transparent" : "rgba(255,255,255,0.9)",
+          zIndex: 11, // 필터 탭보다 위로 올라오게
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: isMobile ? "none" : "2px 0 8px rgba(0,0,0,0.2)",
         }}
       >
-        <form onSubmit={searchPlaces} style={{ display: "flex", gap: "8px" }}>
+        <form
+          onSubmit={(e) => {
+            searchPlaces(e);
+            setIsListOpen(true);
+          }}
+          style={{
+            display: "flex",
+            gap: "8px",
+            background: "white",
+            padding: "10px",
+            borderRadius: "8px",
+            boxShadow: isMobile ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+          }}
+        >
           <input
             placeholder="장소 검색.."
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            style={{
-              padding: "6px",
+            onChange={(e) => {
+              setKeyword(e.target.value);
+              if (e.target.value === "") setSearchResults([]); // 다 지우면 결과도 지움
             }}
-            size="12"
+            style={{
+              flex: 1,
+              padding: "6px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+            }}
           />
-          <button type="submit">검색</button>
+          <button
+            type="submit"
+            style={{ padding: "6px 12px", cursor: "pointer" }}
+          >
+            검색
+          </button>
         </form>
-        <ul
-          style={{
-            maxHeight: 300,
-            overflowY: "auto",
-            paddingLeft: 0,
-            marginTop: 10,
-          }}
-        >
-          {filteredPlaces.map((p, i) => (
-            <li
-              key={i}
-              onClick={() => {
-                setSelectedPlace(p);
-                setMapCenter({ lat: p.y, lng: p.x });
-              }}
-              style={{
-                cursor: "pointer",
-                borderBottom: "1px solid #ccc",
-                padding: "5px 0",
-              }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                {p.place_name}
-              </div>
-              {/* 주소 추가 */}
-              <div
-                style={{ fontSize: "12px", color: "gray", marginTop: "4px" }}
+
+        {filteredPlaces.length > 0 && (
+          <>
+            {/* 모바일에서만 렌더링되는 토글 버튼 */}
+            {isMobile && (
+              <button
+                onClick={() => setIsListOpen(!isListOpen)}
+                style={{
+                  margin: "10px auto",
+                  padding: "8px 20px",
+                  background: "#0b1031",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "20px",
+                  fontWeight: "bold",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                  cursor: "pointer",
+                }}
               >
-                {p.address_name}
-              </div>
-            </li>
-          ))}
-        </ul>
+                {isListOpen ? "리스트 접기 " : "목록 보기 "}
+              </button>
+            )}
+
+            {/* 검색 결과 리스트 */}
+            {(!isMobile || isListOpen) && (
+              <ul
+                style={{
+                  maxHeight: isMobile ? "250px" : "calc(100vh - 70px)",
+                  overflowY: "auto",
+                  paddingLeft: 0,
+                  margin: isMobile ? 0 : "10px 0 0 0",
+                  background: "white",
+                  borderRadius: isMobile ? "8px" : "0",
+                  boxShadow: isMobile ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
+                }}
+              >
+                {filteredPlaces.map((p, i) => (
+                  <li
+                    key={i}
+                    onClick={() => {
+                      setSelectedPlace(p);
+                      setMapCenter({ lat: p.y, lng: p.x });
+                      setOpenMarkerId(null);
+                      if (isMobile) setIsListOpen(false); // 모바일은 리스트 누르면 접어주기
+                    }}
+                    style={{
+                      cursor: "pointer",
+                      borderBottom: "1px solid #ccc",
+                      padding: "10px 15px", listStyle:"none", textAlign:"left"
+                    }}
+                  >
+                    <div style={{ fontWeight: "bold", fontSize: "15px" }}>
+                      {p.place_name}
+                    </div>
+                    {/* 주소 추가 */}
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "gray",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {p.address_name}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

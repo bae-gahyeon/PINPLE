@@ -119,14 +119,41 @@ export default function MapTab({
           padding: "10px 15px",
           borderRadius: "20px",
           boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+
+          // 모바일 가로 스크롤
+          width: "max-content",
+          maxWidth: "90%",
+          overflow: "auto", // 가로 공간 부족하면 스크롤 생성
+          whiteSpace: "nowrap", // 버튼 1줄 고정
         }}
       >
-        <button onClick={() => setActiveTab("ALL")}>전체</button>
-        <button onClick={() => setActiveTab("음식점")}>식당</button>
-        <button onClick={() => setActiveTab("카페")}>카페</button>
-        <button onClick={() => setActiveTab("문화시설")}>문화</button>
-        <button onClick={() => setActiveTab("관광명소")}>관광</button>
-        <button onClick={() => setActiveTab("숙박")}>숙소</button>
+        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("ALL")}>
+          전체
+        </button>
+        <button
+          style={{ flexShrink: 0 }}
+          onClick={() => setActiveTab("음식점")}
+        >
+          식당
+        </button>
+        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("카페")}>
+          카페
+        </button>
+        <button
+          style={{ flexShrink: 0 }}
+          onClick={() => setActiveTab("문화시설")}
+        >
+          문화
+        </button>
+        <button
+          style={{ flexShrink: 0 }}
+          onClick={() => setActiveTab("관광명소")}
+        >
+          관광
+        </button>
+        <button style={{ flexShrink: 0 }} onClick={() => setActiveTab("숙박")}>
+          숙소
+        </button>
       </div>
 
       {/* 지도 center를 mapCenter 상태로 연결 */}

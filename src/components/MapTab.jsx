@@ -373,19 +373,17 @@ export default function MapTab({
         ))}
       </Map>
 
-      {/* PC/모바일 반응형 검색창 & 리스트 영역 */}
+      {/* PC/모바일 통합: 상단 플로팅 검색창 & 리스트 영역 */}
       <div
         style={{
           position: "absolute",
-          top: isMobile ? 10 : 0, //모바일 살짝 띄우고 PC는 딱 붙임
-          left: isMobile ? 10 : 0,
-          width: isMobile ? "calc(100% - 20px)" : "300px", // 모바일 꽉 차게, PC는 좌측 사이드바
-          height: isMobile ? "auto" : "100%",
-          background: isMobile ? "transparent" : "rgba(255,255,255,0.9)",
+          top: "10px", // PC, 모바일 모두 상단 고정
+          left: "10px", 
+          width: isMobile ? "calc(100% - 20px)" : "350px", // 모바일 꽉 차게, PC는 좌측 사이드바
+          height: "auto",
           zIndex: 11, // 필터 탭보다 위로 올라오게
           display: "flex",
           flexDirection: "column",
-          boxShadow: isMobile ? "none" : "2px 0 8px rgba(0,0,0,0.2)",
         }}
       >
         <form
@@ -426,37 +424,34 @@ export default function MapTab({
 
         {filteredPlaces.length > 0 && (
           <>
-            {/* 모바일에서만 렌더링되는 토글 버튼 */}
-            {isMobile && (
-              <button
-                onClick={() => setIsListOpen(!isListOpen)}
-                style={{
-                  margin: "10px auto",
-                  padding: "8px 20px",
-                  background: "#0b1031",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "20px",
-                  fontWeight: "bold",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                  cursor: "pointer",
-                }}
-              >
-                {isListOpen ? "리스트 접기 " : "목록 보기 "}
-              </button>
-            )}
+            <button
+              onClick={() => setIsListOpen(!isListOpen)}
+              style={{
+                margin: "10px auto",
+                padding: "8px 20px",
+                background: "#0b1031",
+                color: "white",
+                border: "none",
+                borderRadius: "20px",
+                fontWeight: "bold",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                cursor: "pointer",
+              }}
+            >
+              {isListOpen ? "리스트 접기 " : "목록 보기 "}
+            </button>
 
             {/* 검색 결과 리스트 */}
-            {(!isMobile || isListOpen) && (
+            {isListOpen && (
               <ul
                 style={{
-                  maxHeight: isMobile ? "250px" : "calc(100vh - 70px)",
+                  maxHeight: isMobile ? "250px" : "400px)",
                   overflowY: "auto",
                   paddingLeft: 0,
-                  margin: isMobile ? 0 : "10px 0 0 0",
+                  margin: 0,
                   background: "white",
-                  borderRadius: isMobile ? "8px" : "0",
-                  boxShadow: isMobile ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                 }}
               >
                 {filteredPlaces.map((p, i) => (
@@ -466,12 +461,14 @@ export default function MapTab({
                       setSelectedPlace(p);
                       setMapCenter({ lat: p.y, lng: p.x });
                       setOpenMarkerId(null);
-                      if (isMobile) setIsListOpen(false); // 모바일은 리스트 누르면 접어주기
+                      setIsListOpen(false); // 장소 누르면 리스트 접기
                     }}
                     style={{
                       cursor: "pointer",
                       borderBottom: "1px solid #ccc",
-                      padding: "10px 15px", listStyle:"none", textAlign:"left"
+                      padding: "10px 15px",
+                      listStyle: "none",
+                      textAlign: "left",
                     }}
                   >
                     <div style={{ fontWeight: "bold", fontSize: "15px" }}>

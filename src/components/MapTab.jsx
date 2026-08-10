@@ -175,7 +175,10 @@ export default function MapTab({
               src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
               size: { width: 31, height: 35 },
             }}
-            onClick={() => setOpenMarkerId(record.id)} // 💡 클릭하면 alert 대신 ID를 저장!
+            onClick={() => {
+              setOpenMarkerId(record.id); // 빨간 핀 열기
+              setSelectedPlace(null); // 파란 핀 팝업 닫기
+            }} // 💡 클릭하면 alert 대신 ID를 저장!
           />
         ))}
 
@@ -340,6 +343,7 @@ export default function MapTab({
             position={{ lat: place.y, lng: place.x }}
             onClick={() => {
               setSelectedPlace(place);
+              setOpenMarkerId(null); // 빨간 핀 팝업 닫기
               setMapCenter({ lat: place.y, lng: place.x });
             }}
           />

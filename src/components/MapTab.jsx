@@ -125,9 +125,8 @@ export default function MapTab({
         <div
           style={{
             position: "absolute",
-            top: "80px", //안내창이나 다른 요소와 안 겹치게 간격 확보
-            left: "50%",
-            transform: "translateX(-50%)",
+            top: isMobile ? "70px" : "10px", //안내창이나 다른 요소와 안 겹치게 간격 확보
+            right: isMobile ? "10px" : "45px",
             zIndex: 10,
             display: "flex",
             gap: "10px",
@@ -138,7 +137,7 @@ export default function MapTab({
 
             // 모바일 가로 스크롤
             width: "max-content",
-            maxWidth: "90%",
+            maxWidth: isMobile ? "calc(100%- 20px)" : "calc(100vw - 300px)",
             overflow: "auto", // 가로 공간 부족하면 스크롤 생성
             whiteSpace: "nowrap", // 버튼 1줄 고정
           }}
@@ -194,6 +193,7 @@ export default function MapTab({
           <MapMarker
             key={record.id}
             position={{ lat: record.lat, lng: record.lng }}
+            title={record.placeName} // 마우스 올리면 저장된 이름 뜸
             image={{
               src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
               size: { width: 31, height: 35 },
@@ -364,6 +364,7 @@ export default function MapTab({
           <MapMarker
             key={i}
             position={{ lat: place.y, lng: place.x }}
+            title={place.place_name}
             onClick={() => {
               setSelectedPlace(place);
               setOpenMarkerId(null); // 빨간 핀 팝업 닫기
@@ -378,8 +379,8 @@ export default function MapTab({
         style={{
           position: "absolute",
           top: "10px", // PC, 모바일 모두 상단 고정
-          left: "10px", 
-          width: isMobile ? "calc(100% - 20px)" : "350px", // 모바일 꽉 차게, PC는 좌측 사이드바
+          left: "10px",
+          width: isMobile ? "calc(100% - 20px)" : "300px", // 모바일 꽉 차게, PC는 좌측 사이드바
           height: "auto",
           zIndex: 11, // 필터 탭보다 위로 올라오게
           display: "flex",
@@ -393,11 +394,13 @@ export default function MapTab({
           }}
           style={{
             display: "flex",
-            gap: "8px",
+            alignItems: "center", //버튼 수직 중앙 정렬
             background: "white",
-            padding: "10px",
+            padding: "6px 12px",
             borderRadius: "8px",
             boxShadow: isMobile ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
           <input
@@ -409,14 +412,49 @@ export default function MapTab({
             }}
             style={{
               flex: 1,
+              minWidth: 0, // 입력창 길어져도 레이아웃 안깨지게
               padding: "6px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
+              border: "none",
+              outline: "none", // 클릭 시 파란 테두리 방지
+              fontSize: "15px",
             }}
           />
+
+          {/* 글자가 1글자라도 있으면 X버튼 */}
+          {keyword && (
+            <button
+              type="button"
+              onClick={() => {
+                setKeyword(""); // 검색어 지우기
+                setSearchResults([]); // 파란 핀 제거
+                setIsListOpen(false); // 리스트 닫기
+              }}
+              style={{
+                border: "none",
+                background: "transparent",
+                color: "#999",
+                fontSize: "16px",
+                cursor: "pointer",
+                padding: "0 8px",
+              }}
+            >
+              ✕
+            </button>
+          )}
+
+          {/* 검색어와 검색 버튼 사이의 얇은 구분선 */}
+          <div
+            style={{
+              width: "1px",
+              height: "16px",
+              background: "#ddd",
+              margin: "0 4px",
+            }}
+          ></div>
+
           <button
             type="submit"
-            style={{ padding: "6px 12px", cursor: "pointer" }}
+            style={{ padding: "6px 12px", cursor: "pointer", }}
           >
             검색
           </button>

@@ -44,10 +44,19 @@ export default function Pinple({ currentProfile, setProfile }) {
       });
   };
 
+  // 모바일 화면 감지 상태 추가
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProfile]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div
@@ -60,18 +69,42 @@ export default function Pinple({ currentProfile, setProfile }) {
     >
       {/* 상단 헤더 */}
       <div
-        style={{ padding: "10px", textAlign: "center", position: "relative" }}
+        style={{
+          padding: isMobile ? "5px" : "10px",
+          textAlign: "center",
+          position: "relative",
+        }}
       >
-        <h1 style={{ margin: "10px 0", fontWeight: "bold" }}>
+        <h1
+          style={{
+            margin: isMobile ? "5px 0 " : "10px 0",
+            fontSize: isMobile ? "24px" : "2em", // 로고 크기 축소
+            fontWeight: "bold",
+          }}
+        >
           <span style={{ color: "red" }}>M</span>APFLIX
         </h1>
-        <h3>장소를 검색하고 기록을 추가하세요.</h3>
+
+        <h3
+          style={{
+            fontSize: isMobile ? "13px" : "1.17em",
+            margin: isMobile ? "5px 0" : "1em 0",
+          }}
+        >
+          장소를 검색하고 기록을 추가하세요.
+        </h3>
         <button
           onClick={() => {
             localStorage.removeItem("currentProfile");
             setProfile(null);
           }}
-          style={{ position: "absolute", top: 15, right: 15 }}
+          style={{
+            position: "absolute",
+            top: isMobile ? 10 : 15,
+            right: isMobile ? 10 : 15,
+            fontSize: isMobile ? "11px" : "14px",
+            padding: isMobile ? "4px 8px" : "6px 12px",
+          }}
         >
           프로필 변경
         </button>
@@ -115,7 +148,7 @@ export default function Pinple({ currentProfile, setProfile }) {
           />
         )}
       </div>
-      {/* 모달창 (저장 UI) */} 
+      {/* 모달창 (저장 UI) */}
       {isModalOpen && (
         <RecordModal
           selectedPlace={selectedPlace}

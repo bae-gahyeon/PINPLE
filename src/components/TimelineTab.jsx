@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import { db } from "./firebase";
+import DetailModal from "./DetailModal";
 
 export default function TimelineTab({ savedRecords, fetchRecords }) {
   // 체크된 기록들 ID 모아둘 배열 상태
   const [selectedIds, setSelectedIds] = useState([]);
-
   const [isDeleteMode, setIsdeleteMode] = useState(false);
+
+  // 클릭한 카드 기록 담아둘 상태
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   // 체크박스 누를 때 마다 넣었다 뺐다 하는 함수
   const handleToggle = (id) => {
@@ -142,7 +145,6 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           )}
         </div>
       </div>
-
       {savedRecords.map((r) => (
         <div
           key={r.id}
@@ -165,7 +167,7 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
               handleToggle(r.id); // 삭제 모드일 땐 체크박스 껐다 켜기
             } else {
               //일반 모드일 땐 모달창 띄우기
-              alert("나중에 상세 모달창 추가 예정");
+              setSelectedRecord(r);
             }
           }}
         >
@@ -195,6 +197,12 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           </div>
         </div>
       ))}
+      {selectedRecord && (
+        <DetailModal
+          record={selectedRecord}
+          onClose={() => setSelectedRecord(null)}
+        />
+      )}
     </div>
   );
 }

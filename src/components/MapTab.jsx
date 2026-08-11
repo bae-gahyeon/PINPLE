@@ -93,6 +93,22 @@ export default function MapTab({
             );
           }
 
+          if (activeTab === "문화시설") {
+            return record.category.includes("문화");
+          }
+
+          if (activeTab === "관광명소") {
+            return (
+              record.category.includes("관광") ||
+              (record.category.includes("여행") &&
+                !record.category.includes("숙박"))
+            );
+          }
+
+          if (activeTab === "숙박") {
+            return record.category.includes("숙박");
+          }
+
           return record.category.includes(activeTab);
         });
 

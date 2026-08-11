@@ -1,5 +1,8 @@
 // src/components/MapTab.jsx
 import { act, useEffect, useState } from "react";
+// DetailModal 부품 불러오기
+import DetailModal from "./DetailModal";
+
 import {
   Map,
   MapMarker,
@@ -111,6 +114,9 @@ export default function MapTab({
 
           return record.category.includes(activeTab);
         });
+
+  // 클릭한 마커 데이터 담아둘 상태
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -230,71 +236,81 @@ export default function MapTab({
           (record) =>
             openMarkerId === record.id && (
               <CustomOverlayMap
-                key={`overlay-${record.id}`}
+                key={record.id}
                 position={{ lat: record.lat, lng: record.lng }}
-                yAnchor={1.3} // 마커 살짝 위쪽으로 띄우기
+                yAnchor={1.5} // 마커 살짝 위쪽으로 띄우기
               >
+                {/* 말풍선 전체 컨테이너 */}
                 <div
+                  onClick={() => setSelectedRecord(record)} // 💡 클릭 시 상세 모달창 열기!
                   style={{
-                    position: "relative", // x버튼 절대 위치
-                    padding: "15px",
+                    display: "flex",
+                    alignItems: "stretch",
                     background: "white",
                     borderRadius: "8px",
-                    border: "1px solid #ddd",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                    minWidth: "140px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                    overflow: "hidden",
+                    cursor: "pointer",
                   }}
                 >
-                  <button
-                    onClick={() => setOpenMarkerId(null)}
+                  {/* 왼쪽: 장소 이름 및 날짜 영역 */}
+                  <div
                     style={{
-                      position: "absolute",
-                      top: "8px",
-                      right: "8px",
-                      border: "none",
-                      background: "transparent",
-                      fontSize: "14px",
-                      color: "#888",
-                      cursor: "pointer",
+                      padding: "8px 12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}
                   >
-                    ✕
-                  </button>
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "15px",
+                        color: "#333",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {record.placeName}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "#888",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {record.date}
+                    </span>
+                  </div>
 
-                  <strong
+                  {/* 오른쪽: 빨간색 화살표 버튼 영역 */}
+                  <div
                     style={{
-                      display: "block",
-                      color: "#000000",
-                      marginBottom: "5px",
-                      fontSize: "15px",
+                      background: "#e50914",
+                      color: "white",
+                      padding: "0 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "18px",
+                      fontWeight: "bold",
                     }}
                   >
-                    {record.placeName}
-                  </strong>
-                  <span style={{ fontSize: "13px" }}>{record.date}</span>
-                  <br />
-                  <br />
-                  <span style={{ fontSize: "13px" }}>🧾 {record.cost}원</span>
-                  <br />
-                  <span style={{ fontSize: "12px", color: "gray" }}>
-                    📝 {record.memo}
-                  </span>
-                  <br />
-
-                  <button
-                    onClick={() => handleDelete(record.id)}
-                    style={{
-                      marginTop: "15px",
-                      padding: "3px 10px",
-                      border: "none",
-                      background: "#eee",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    삭제
-                  </button>
+                    {">"}
+                  </div>
                 </div>
+
+                {/* 말풍선 아래쪽 뾰족한 꼬리표 (사진처럼 마커를 가리키게) */}
+                <div
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "8px solid transparent",
+                    borderRight: "8px solid transparent",
+                    borderTop: "8px solid white",
+                    margin: "0 auto",
+                  }}
+                />
               </CustomOverlayMap>
             ),
         )}
@@ -503,7 +519,7 @@ export default function MapTab({
             {isListOpen && (
               <ul
                 style={{
-                  maxHeight: isMobile ? "250px" : "400px)",
+                  maxHeight: isMobile ? "250px" : "400px",
                   overflowY: "auto",
                   paddingLeft: 0,
                   margin: 0,
@@ -549,6 +565,18 @@ export default function MapTab({
           </>
         )}
       </div>
+      {/* 💡 파일 맨 마지막 닫는 div 태그 직전에 모달창 렌더링 코드 무조건 추가! */}
+      {selectedRecord && (
+        <DetailModal
+          record={selectedRecord}
+          onClose={() => setSelectedRecord(null)}
+          onEdit={() => alert("수정 기능 연결 예정!")}
+          onDelete={(id) => {
+            handleDelete(id);
+            setSelectedRecord(null); // 삭제하면 모달창도 같이 닫기
+          }}
+        />
+      )}
     </div>
   );
 }

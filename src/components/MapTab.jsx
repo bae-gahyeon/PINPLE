@@ -126,7 +126,9 @@ export default function MapTab({
           style={{
             position: "absolute",
             top: isMobile ? "70px" : "10px", //안내창이나 다른 요소와 안 겹치게 간격 확보
+            left: isMobile ? "50%" : "auto",
             right: isMobile ? "10px" : "45px",
+            transform: isMobile ? "translateX(-50%)" : "none",
             zIndex: 10,
             display: "flex",
             gap: "10px",
@@ -185,9 +187,11 @@ export default function MapTab({
         level={8}
       >
         {/* 줌 컨트롤러 추가 */}
-        <ZoomControl
-          position={window.kakao.maps.ControlPosition.RIGHT}
-        ></ZoomControl>
+        {!isMobile && (
+          <ZoomControl
+            position={window.kakao.maps.ControlPosition.RIGHT}
+          ></ZoomControl>
+        )}
         {/* 내 저장 기록 (빨간 핀) */}
         {visibleRecords.map((record) => (
           <MapMarker
@@ -454,7 +458,7 @@ export default function MapTab({
 
           <button
             type="submit"
-            style={{ padding: "6px 12px", cursor: "pointer", }}
+            style={{ padding: "6px 12px", cursor: "pointer" }}
           >
             검색
           </button>

@@ -1,6 +1,6 @@
 // src/components/DetailModal.jsx
 
-export default function DetailModal({ record, onClose }) {
+export default function DetailModal({ record, onClose, onPrev, onNext }) {
   if (!record) return null;
 
   // 추후 수정: 파이어베이스에서 사진 URL을 받아오기 전까지 쓸 임시 사진
@@ -37,6 +37,56 @@ export default function DetailModal({ record, onClose }) {
       >
         {/* 사진 영역(나중에 사진 URL로 교체될 자리) */}
         <div style={{ width: "100%", height: "250px", position: "relative" }}>
+          {/* 💡 2. 사진 좌측: 이전 버튼 */}
+          <button
+            onClick={onPrev}
+            style={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(0,0,0,0.5)",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: "35px",
+              height: "35px",
+              cursor: "pointer",
+              zIndex: 10,
+              fontSize: "18px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {"<"}
+          </button>
+
+          {/* 💡 3. 사진 우측: 다음 버튼 */}
+          <button
+            onClick={onNext}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(0,0,0,0.5)",
+              color: "white",
+              border: "none",
+              borderRadius: "50%",
+              width: "35px",
+              height: "35px",
+              cursor: "pointer",
+              zIndex: 10,
+              fontSize: "18px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {">"}
+          </button>
+
           <img
             src={dummyImageUrl}
             alt="장소 사진(추후 파이어베이스랑 연동)"

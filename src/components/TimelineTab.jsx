@@ -9,8 +9,8 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [isDeleteMode, setIsdeleteMode] = useState(false);
 
-  // 클릭한 카드 기록 담아둘 상태
-  const [selectedRecord, setSelectedRecord] = useState(null);
+  // 몇 번째 카드인지 번호를 기억하는 상태로 변경
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   // 체크박스 누를 때 마다 넣었다 뺐다 하는 함수
   const handleToggle = (id) => {
@@ -145,7 +145,7 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           )}
         </div>
       </div>
-      {savedRecords.map((r) => (
+      {savedRecords.map((r, index) => (
         <div
           key={r.id}
           style={{
@@ -167,7 +167,7 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
               handleToggle(r.id); // 삭제 모드일 땐 체크박스 껐다 켜기
             } else {
               //일반 모드일 땐 모달창 띄우기
-              setSelectedRecord(r);
+              setSelectedIndex(index);
             }
           }}
         >
@@ -197,10 +197,22 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           </div>
         </div>
       ))}
-      {selectedRecord && (
+      {selectedIndex !== null && (
         <DetailModal
-          record={selectedRecord}
-          onClose={() => setSelectedRecord(null)}
+          record={savedRecords[selectedIndex]} // 번호에 맞는 데이터를 뽑아서 전달
+          onClose={() => setSelectedIndex(null)}
+          // 이전 버튼 누르면 번호를 1 빼기 (첫 카드면 맨 끝으로 이동)
+          onPrev={() =>
+            setSelectedIndex((prev) =>
+              prev > 0 ? prev - 1 : savedRecords.length - 1,
+            )
+          }
+          // 다음 버튼 누르면 번호를 1 더하기 (끝 카드면 맨 처음으로 이동)
+          onNext={() =>
+            setSelectedIndex((prev) =>
+              prev < savedRecords.length - 1 ? prev + 1 : 0,
+            )
+          }
         />
       )}
     </div>

@@ -197,6 +197,8 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           </div>
         </div>
       ))}
+      
+      {/* 모달 렌더링 부분 */}
       {selectedIndex !== null && (
         <DetailModal
           record={savedRecords[selectedIndex]} // 번호에 맞는 데이터를 뽑아서 전달
@@ -213,6 +215,16 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
               prev < savedRecords.length - 1 ? prev + 1 : 0,
             )
           }
+
+          onDelete={(id)=>{
+            handleDelete(id);
+            setSelectedIndex(null); // 삭제 후 모달창 닫기
+          }}
+
+          // 수정 기능 뼈대 잡아둠
+          onEdit={(record)=>{
+            alert("수정 기능은 폼 모달과 연결 예정");
+          }}
         />
       )}
     </div>

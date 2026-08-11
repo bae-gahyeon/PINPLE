@@ -1,6 +1,13 @@
 // src/components/DetailModal.jsx
 
-export default function DetailModal({ record, onClose, onPrev, onNext }) {
+export default function DetailModal({
+  record,
+  onClose,
+  onPrev,
+  onNext,
+  onEdit,
+  onDelete,
+}) {
   if (!record) return null;
 
   // 추후 수정: 파이어베이스에서 사진 URL을 받아오기 전까지 쓸 임시 사진
@@ -157,6 +164,38 @@ export default function DetailModal({ record, onClose, onPrev, onNext }) {
               <strong>메모:</strong>
               <br />
               {record.memo || "작성된 메모가 없습니다."}
+              <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+                <button
+                  onClick={() => onEdit(record)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    background: "#4caf50",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  수정
+                </button>
+                <button
+                  onClick={() => onDelete(record.id)}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    background: "#e50914",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  삭제
+                </button>
+              </div>
             </div>
           </div>
         </div>

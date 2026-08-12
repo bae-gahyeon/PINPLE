@@ -47,6 +47,9 @@ export default function Pinple({ currentProfile, setProfile }) {
   // 모바일 화면 감지 상태 추가
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  // 드롭다운 열림/닫힘 상태 추가
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,6 +60,28 @@ export default function Pinple({ currentProfile, setProfile }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // 드롭다운 메뉴 버튼 부품
+  const DropdownItem = ({ icon, text, onClick, isLast }) => (
+    <button
+      onClick={onClick}
+      style={{
+        padding: "15px",
+        background: "transparent",
+        border: "none",
+        textAlign: "left",
+        cursor: "pointer",
+        fontSize: "14px",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        color: "#333",
+        borderBottom: isLast ? "none" : "1px solid #eee", // 마지막 칸은 밑줄 빼
+      }}
+    >
+      {icon} {text}
+    </button>
+  );
 
   return (
     <div
@@ -93,22 +118,75 @@ export default function Pinple({ currentProfile, setProfile }) {
         >
           장소를 검색하고 기록을 추가하세요.
         </h3>
-        <button
-          onClick={() => {
-            localStorage.removeItem("currentProfile");
-            setProfile(null);
-          }}
+        <div
           style={{
             position: "absolute",
             top: isMobile ? 10 : 15,
             right: isMobile ? 10 : 15,
-            fontSize: isMobile ? "11px" : "14px",
-            padding: isMobile ? "4px 8px" : "6px 12px",
           }}
         >
-          프로필 변경
-        </button>
+          <div
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            style={{
+              width: isMobile ? "32px" : "40px",
+              height: isMobile ? "32px" : "40px",
+              borderRadius: "4px",
+              background: "#e50914",
+              color: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: "bold",
+              fontSize: isMobile ? "16px" : "20px",
+            }}
+          >
+            {currentProfile ? currentProfile.charAt(0) : "P"}
+          </div>
+
+          {/* 2. 드롭다운 메뉴 */}
+          {isDropdownOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: isMobile ? "40px" : "50px",
+                right: 0,
+                width: "180px",
+                background: "white",
+                color: "#333",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)", // 세련된 은은한 그림자
+                border: "1px solid #ddd", // 연한 회색 테두리
+                display: "flex",
+                flexDirection: "column",
+                zIndex: 10000,
+                borderRadius: "8px",
+              }}
+            >
+              <DropdownItem
+                icon="🔄"
+                text="프로필 전환"
+                onClick={() => setProfile(null)}
+              />
+              <DropdownItem
+                icon="⚙️"
+                text="설정"
+                onClick={() => alert("설정 열기")}
+              />
+              <DropdownItem
+                icon="🌙"
+                text="다크 모드"
+                onClick={() => alert("다크모드 전환")}
+              />
+              <DropdownItem
+                icon="❓"
+                text="고객 센터"
+                onClick={() => alert("고객센터 연결")}
+                isLast={true}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
       {/* {중앙 탭 내용 영역} */}
       <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
         {/* {1. 분리한 MapTab 부품 끼워넣기} */}

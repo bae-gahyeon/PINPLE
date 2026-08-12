@@ -61,6 +61,8 @@ export default function Pinple({ currentProfile, setProfile }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const profileColor = localStorage.getItem("profileColor") || "e50914";
+
   // 드롭다운 메뉴 버튼 부품
   const DropdownItem = ({ icon, text, onClick, isLast }) => (
     <button
@@ -131,7 +133,7 @@ export default function Pinple({ currentProfile, setProfile }) {
               width: isMobile ? "32px" : "40px",
               height: isMobile ? "32px" : "40px",
               borderRadius: "4px",
-              background: "#e50914",
+              background: profileColor,
               color: "white",
               display: "flex",
               justifyContent: "center",

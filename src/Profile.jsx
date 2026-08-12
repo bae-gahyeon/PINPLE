@@ -43,6 +43,7 @@ export default function Profile({ setProfile }) {
     } else {
       // 평소엔 앱으로 입장
       localStorage.setItem("currentProfile", p.name);
+      localStorage.setItem("profileColor", p.color || "#e50914"); // 프로필 색상 로컬리지에 저장
       setProfile(p.name);
     }
   };

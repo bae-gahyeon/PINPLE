@@ -110,9 +110,10 @@ export default function RecordModal({
       <div
         style={{
           background: "white",
-          padding: 20,
-          borderRadius: 10,
-          width: 350,
+          padding: "25px",
+          borderRadius: "12px",
+          width: "350px",
+          boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
         }}
       >
         <h3
@@ -146,22 +147,36 @@ export default function RecordModal({
           원
         </p>
         <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-          <button onClick={() => setCost(Number(cost || 0) + 1000)}>
+          <button
+            style={amountBtnStyle}
+            onClick={() => setCost(Number(cost || 0) + 1000)}
+          >
             +1천원
           </button>
-          <button onClick={() => setCost(Number(cost || 0) + 5000)}>
+          <button
+            style={amountBtnStyle}
+            onClick={() => setCost(Number(cost || 0) + 5000)}
+          >
             +5천원
           </button>
-          <button onClick={() => setCost(Number(cost || 0) + 10000)}>
+          <button
+            style={amountBtnStyle}
+            onClick={() => setCost(Number(cost || 0) + 10000)}
+          >
             +1만원
           </button>
-          <button onClick={() => setCost("")}>초기화</button>
+          <button
+            style={{ ...amountBtnStyle, background: "#ddd" }}
+            onClick={() => setCost("")}
+          >
+            초기화
+          </button>
         </div>
-        <p>
+        <p style={{ marginTop: "15px", marginBottom: "5px" }}>
           📝 메모:{" "}
           <textarea
             rows="3"
-            style={{ width: "100%" }}
+            style={{ width: "100%", resize: "none",marginTop:"10px" }}
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
           ></textarea>
@@ -175,13 +190,13 @@ export default function RecordModal({
           }}
         >
           <button
-            style={{ ...btnStyle, background: "#ccc", color: "black" }}
+            style={{ ...btnStyle, background: "#ddd", color: "black" }}
             onClick={handleClose}
           >
             닫기
           </button>
           <button
-            style={{ ...btnStyle, background: "#e50914", color: "white" }}
+            style={{ ...btnStyle, background: "#0b1031", color: "white" }}
             onClick={handleSave}
           >
             {editingRecord ? "수정완료" : "저장하기"}

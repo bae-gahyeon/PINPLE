@@ -129,7 +129,7 @@ export default function DetailModal({
               style={{
                 fontSize: "12px",
                 color: "white",
-                background: "#e50914",
+                background: "#0b1031",
                 padding: "3px 8px",
                 borderRadius: "4px",
               }}

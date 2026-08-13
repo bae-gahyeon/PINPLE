@@ -6,6 +6,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // 날짜 클릭 감지용 플러그인
 import DetailModal from "./DetailModal";
 import { db } from "./firebase";
+import koLocale from "@fullcalendar/core/locales/ko";
+
+import { getWeekday } from "../utils";
 
 export default function CalendarTab({
   savedRecords,
@@ -107,6 +110,7 @@ export default function CalendarTab({
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
+          locale={koLocale}
           events={events}
           eventContent={renderEventContent} // 빨간 점
           dateClick={(info) => {
@@ -150,7 +154,7 @@ export default function CalendarTab({
             filteredRecords.map((r) => (
               <div
                 key={r.id}
-                onClick={() => setSelectedRecord(r)} // 💡 3. 카드 누르면 상세 모달창으로 연결!
+                onClick={() => setSelectedRecord(r)} // 카드 누르면 상세 모달창으로 연결
                 style={{
                   marginBottom: 15,
                   padding: "15px 20px",
@@ -158,7 +162,7 @@ export default function CalendarTab({
                   borderRadius: 8,
                   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   cursor: "pointer",
-                  borderLeft: "5px solid #e50914", // 넷플릭스 감성 포인트 선
+                  borderLeft: "5px solid #e50914",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -191,7 +195,7 @@ export default function CalendarTab({
         </div>
       )}
 
-      {/* --- 💡 3. 상세 모달창 (지도/타임라인과 동일하게 연동) --- */}
+      {/* --- 상세 모달창 (지도/타임라인과 동일하게 연동) --- */}
       {selectedRecord && (
         <DetailModal
           record={

@@ -1,11 +1,20 @@
 // src/components/DashboardTab.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // AI 대시보드 상태
 export default function DashboardTab({ savedRecords, currentProfile }) {
   // Pinple에 있는 AI 상태 이사 완료
   const [aiInsight, setAiInsight] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // 모바일 화면 감지 상태
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Gemini AI 호출 함수
   const analyzeWithGemini = async () => {
@@ -108,14 +117,16 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
     })
     .filter(Boolean);
 
-    const topRegion=getTopItem(regions);
-    
+  const topRegion = getTopItem(regions);
+
   // 4. 최다 방문 카테고리 (예: "카페", "음식점")
   const categories = savedRecords.map((r) => r.category).filter(Boolean);
 
   // 카테고리 이름이 길면 첫 번째 항목만 자르기 (예: "음식점 > 한식" -> "음식점")
   const formattedCategories = categories.map((c) => c.split(" > ")[0]);
   const topCategory = getTopItem(formattedCategories);
+
+  const profileColor = localStorage.getItem("profileColor") || "#e50914";
 
   /* 4. AI 요약 대시보드 화면 렌더링 부분 */
   return (
@@ -138,6 +149,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
         style={{
           flex: 1,
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           gap: "20px",
           background: "white",
           padding: 20,
@@ -151,17 +163,25 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
             style={{
               width: 100,
               height: 100,
-              background: "#f9dcdc",
+              background: profileColor,
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "3rem",
+              fontSize: "2.5rem",
               margin: "0 auto 10px auto",
+              fontWeight: "bold",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
             }}
           >
-            추가 예정
+            {currentProfile ? currentProfile.charAt(0) : "P"}
           </div>
+          <h3 style={{ marginTop: 15, marginBottom: 5 }}>
+            {currentProfile} 님
+          </h3>
+          <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>
+            총 {savedRecords.length}개의 추억
+          </p>
         </div>
 
         {/* 오른쪽 인사이트 영역 */}
@@ -173,6 +193,9 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               lineHeight: "1.6",
               color: "#333",
               marginBottom: 20,
+              background: "#f4f7f8",
+              padding: "15px",
+              borderRadius: "10px",
             }}
           >
             {!aiInsight ? (
@@ -197,8 +220,8 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               <p
                 style={{
                   whiteSpace: "pre-wrap",
-                  lineHeight: "1.6",
-                  fontSize: "16px",
+                  margin: 0,
+                  fontSize: "14px",
                 }}
               >
                 {aiInsight}
@@ -210,6 +233,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
           <div
             style={{
               display: "flex",
+              flexWrap: "wrap",
               gap: "10px",
               width: "100%",
               marginTop: "auto",
@@ -229,7 +253,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               <div
                 key={idx}
                 style={{
-                  flex: 1,
+                  flex: isMobile ? "1 1 45%" : 1,
                   background: "#0b1031",
                   color: "white",
                   padding: "15px 10px",
@@ -240,14 +264,14 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               >
                 <div
                   style={{
-                    fontSize: "11px",
+                    fontSize: "12px",
                     color: "#aaa",
                     marginBottom: 8,
                   }}
                 >
                   {stat.title}
                 </div>
-                <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "15px", fontWeight: "bold" }}>
                   {stat.value}
                 </div>
               </div>

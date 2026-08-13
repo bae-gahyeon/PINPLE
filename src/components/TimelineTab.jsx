@@ -4,7 +4,12 @@ import { useState } from "react";
 import { db } from "./firebase";
 import DetailModal from "./DetailModal";
 
-export default function TimelineTab({ savedRecords, fetchRecords }) {
+export default function TimelineTab({
+  savedRecords,
+  fetchRecords,
+  setEditingRecord,
+  setIsModalOpen,
+}) {
   // 체크된 기록들 ID 모아둘 배열 상태
   const [selectedIds, setSelectedIds] = useState([]);
   const [isDeleteMode, setIsdeleteMode] = useState(false);
@@ -197,7 +202,7 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
           </div>
         </div>
       ))}
-      
+
       {/* 모달 렌더링 부분 */}
       {selectedIndex !== null && (
         <DetailModal
@@ -215,15 +220,14 @@ export default function TimelineTab({ savedRecords, fetchRecords }) {
               prev < savedRecords.length - 1 ? prev + 1 : 0,
             )
           }
-
-          onDelete={(id)=>{
+          onDelete={(id) => {
             handleDelete(id);
             setSelectedIndex(null); // 삭제 후 모달창 닫기
           }}
-
           // 수정 기능 뼈대 잡아둠
-          onEdit={(record)=>{
-            alert("수정 기능은 폼 모달과 연결 예정");
+          onEdit={(record) => {
+            setEditingRecord(record); // 어떤 기록을 수정할지 세팅
+            setIsModalOpen(true); // 수정용 폼 (RecordModal) 열기
           }}
         />
       )}

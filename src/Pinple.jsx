@@ -17,6 +17,9 @@ import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
 
 export default function Pinple({ currentProfile, setProfile }) {
+  // 수정할 기록 담아둘 상태
+  const [editingRecord, setEditingRecord] = useState(null);
+
   const [activeTab, setActiveTab] = useState("map");
   const [savedRecords, setSavedRecords] = useState([]);
 
@@ -204,6 +207,9 @@ export default function Pinple({ currentProfile, setProfile }) {
             setKeyword={setKeyword}
             searchResults={searchResults}
             setSearchResults={setSearchResults}
+            // 맵에서도 모달창 수정모드 열기
+            setEditingRecord={setEditingRecord}
+            setIsModalOpen={setIsModalOpen}
           />
         )}
 
@@ -212,6 +218,9 @@ export default function Pinple({ currentProfile, setProfile }) {
           <TimelineTab
             savedRecords={savedRecords}
             fetchRecords={fetchRecords} // 삭제 후 새로고침
+            // 타임라인에서도 모달창 수정모드 열기
+            setEditingRecord={setEditingRecord}
+            setIsModalOpen={setIsModalOpen}
           />
         )}
 
@@ -239,6 +248,9 @@ export default function Pinple({ currentProfile, setProfile }) {
           // 검색 상태 전달 (비우기위해)
           setKeyword={setKeyword}
           setSearchResults={setSearchResults}
+          // 수정모드 상태 전달
+          editingRecord={editingRecord}
+          setEditingRecord={setEditingRecord}
         />
       )}
       {/* 하단 탭 내비게이션 */}

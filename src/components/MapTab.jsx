@@ -22,6 +22,7 @@ export default function MapTab({
   setKeyword,
   searchResults,
   setSearchResults,
+  setEditingRecord,
 }) {
   // PC vs 모바일 화면 감지 상태
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -565,12 +566,19 @@ export default function MapTab({
           </>
         )}
       </div>
-      {/* 💡 파일 맨 마지막 닫는 div 태그 직전에 모달창 렌더링 코드 무조건 추가! */}
+      {/* 파일 맨 마지막 닫는 div 태그 직전에 모달창 렌더링 추가 */}
       {selectedRecord && (
         <DetailModal
-          record={selectedRecord}
+          // selectedRecord(과거) 대신 실시간 배열에서 꺼내오기
+          record={
+            savedRecords.find((r) => r.id === selectedRecord.id) ||
+            selectedRecord
+          }
           onClose={() => setSelectedRecord(null)}
-          onEdit={() => alert("수정 기능 연결 예정!")}
+          onEdit={(record) => {
+            setEditingRecord(record); // 어떤 기록을 수정할지 세팅
+            setIsModalOpen(true); // 수정용 폼 (RecordModal) 열기
+          }}
           onDelete={(id) => {
             handleDelete(id);
             setSelectedRecord(null); // 삭제하면 모달창도 같이 닫기

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { db } from "./firebase";
 import DetailModal from "./DetailModal";
+import { formatDate } from "../utils";
 
 export default function TimelineTab({
   savedRecords,
@@ -192,7 +193,9 @@ export default function TimelineTab({
 
           {/* 기록 내용들 */}
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, color: "gray" }}>{r.date}</div>
+            <div style={{ fontSize: 12, color: "gray" }}>
+              {formatDate(r.date)}
+            </div>
             <div style={{ fontWeight: "bold", fontSize: 16 }}>
               {r.placeName}
             </div>

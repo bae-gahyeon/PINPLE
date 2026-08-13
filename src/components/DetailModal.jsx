@@ -1,5 +1,7 @@
 // src/components/DetailModal.jsx
 
+import { formatDate } from "../utils";
+
 export default function DetailModal({
   record,
   onClose,
@@ -140,15 +142,15 @@ export default function DetailModal({
 
           <div style={{ fontSize: "14px", color: "#444", lineHeight: "1.6" }}>
             <div>
-              <strong>날짜:</strong>
-              {record.date}
+              <strong>날짜: </strong>
+              {formatDate(record.date)}
             </div>
             <div>
-              <strong>주소:</strong>
+              <strong>주소: </strong>
               {record.address || "주소 정보 없음"}
             </div>
             <div>
-              <strong>지출:</strong>
+              <strong>지출: </strong>
               {Number(record.cost || 0).toLocaleString()}원
             </div>
 

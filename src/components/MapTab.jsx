@@ -2,6 +2,7 @@
 import { act, useEffect, useState } from "react";
 // DetailModal 부품 불러오기
 import DetailModal from "./DetailModal";
+import { formatDate } from "../utils";
 
 import {
   Map,
@@ -280,7 +281,7 @@ export default function MapTab({
                         marginTop: "2px",
                       }}
                     >
-                      {record.date}
+                      {formatDate(record.date)}
                     </span>
                   </div>
 

@@ -8,7 +8,7 @@ import DetailModal from "./DetailModal";
 import { db } from "./firebase";
 import koLocale from "@fullcalendar/core/locales/ko";
 
-import { getWeekday } from "../utils";
+import { formatDate } from "../utils";
 
 export default function CalendarTab({
   savedRecords,
@@ -141,7 +141,7 @@ export default function CalendarTab({
               marginTop: 0,
             }}
           >
-            {selectedDate} 기록
+            {formatDate(selectedDate)} 기록
           </h3>
 
           {filteredRecords.length === 0 ? (

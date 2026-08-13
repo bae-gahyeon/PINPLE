@@ -2,6 +2,7 @@
 import { useState } from "react";
 import firebase from "firebase/compat/app";
 import { db } from "./firebase";
+import { formatDate } from "../utils";
 
 // 공통 버튼 스타일
 const btnStyle = {
@@ -136,6 +137,14 @@ export default function RecordModal({
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
+          {/* 날짜를 선택하면 옆에 (목) 하고 요일 표시 */}
+          {date && (
+            <span
+              style={{ fontWeight: "bold", color: "black", marginLeft: "5px" }}
+            >
+              {formatDate(date).slice(-3)}
+            </span>
+          )}
         </p>
         <p>
           🧾 지출액:{" "}
@@ -176,7 +185,7 @@ export default function RecordModal({
           📝 메모:{" "}
           <textarea
             rows="3"
-            style={{ width: "100%", resize: "none",marginTop:"10px" }}
+            style={{ width: "100%", resize: "none", marginTop: "10px" }}
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
           ></textarea>

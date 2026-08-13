@@ -207,7 +207,7 @@ export default function Pinple({ currentProfile, setProfile }) {
             setKeyword={setKeyword}
             searchResults={searchResults}
             setSearchResults={setSearchResults}
-            // 맵에서도 모달창 수정모드 열기
+            // 맵에서도 모달창 열기
             setEditingRecord={setEditingRecord}
             setIsModalOpen={setIsModalOpen}
           />
@@ -218,7 +218,7 @@ export default function Pinple({ currentProfile, setProfile }) {
           <TimelineTab
             savedRecords={savedRecords}
             fetchRecords={fetchRecords} // 삭제 후 새로고침
-            // 타임라인에서도 모달창 수정모드 열기
+            // 타임라인에서도 모달창 열기
             setEditingRecord={setEditingRecord}
             setIsModalOpen={setIsModalOpen}
           />
@@ -226,7 +226,13 @@ export default function Pinple({ currentProfile, setProfile }) {
 
         {/* 📅 3. 캘린더 탭 부품 */}
         {activeTab === "calendar" && (
-          <CalendarTab savedRecords={savedRecords} />
+          <CalendarTab
+            savedRecords={savedRecords}
+            // 캘린더에서도 모달창 열기
+            fetchRecords={fetchRecords}
+            setEditingRecord={setEditingRecord}
+            setIsModalOpen={setIsModalOpen}
+          />
         )}
 
         {/* {4. 분리한 DashboardTab 부품 끼워넣기 */}

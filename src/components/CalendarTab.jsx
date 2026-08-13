@@ -33,11 +33,11 @@ export default function CalendarTab({
     return (
       <div
         style={{
-          width: "8px",
-          height: "8px",
+          width: "6px",
+          height: "6px",
           background: "#e50914",
           borderRadius: "50%",
-          margin: "0 auto", // 가운데 정렬
+          margin: "2px auto 0", // 가운데 정렬
         }}
       ></div>
     );
@@ -71,12 +71,35 @@ export default function CalendarTab({
       }}
     >
       {/* --- 상단: 캘린더 영역 --- */}
+      <style>{`
+        /* 달력 헤더(월, 요일) 폰트 크기 및 색상 */
+        .fc .fc-toolbar-title { font-size: 1.2rem !important; font-weight: bold; }
+        .fc-col-header-cell-cushion { color: #333 !important; font-size: 14px; padding: 10px 0 !important; }
+        
+        /* 날짜 숫자 가운데 정렬 및 여백 축소 */
+        .fc .fc-daygrid-day-top { justify-content: center; margin-top: 5px; }
+        .fc-daygrid-day-number { font-size: 14px !important; color: #333 !important; }
+        
+        /* 달력 칸(셀) 높이 콤팩트하게 압축 */
+        .fc .fc-daygrid-day-frame { min-height: 50px !important; }
+        .fc .fc-daygrid-day-events { margin: 0 !important; }
+        
+        /* 이번 달이 아닌 날짜 배경색을 사진처럼 은은하게 */
+        .fc-day-other { background-color: #f4f7f8 !important; }
+        
+        /* 테두리 색상 연하게 */
+        .fc-theme-standard td, .fc-theme-standard th { border-color: #eaeaea !important; }
+        
+        /* 오늘 날짜 하이라이트 배경색 수정 */
+        .fc .fc-day-today { background-color: #fff0f0 !important; }
+      `}</style>
+
       <div
         style={{
           maxWidth: 800,
           margin: "0 auto",
           background: "white",
-          padding: 20,
+          padding: 15,
           borderRadius: 10,
           boxShadow: "0 2px 8px rgba(0,0,0,0.85)",
         }}

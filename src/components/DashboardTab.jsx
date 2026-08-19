@@ -179,7 +179,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
           <h3 style={{ marginTop: 15, marginBottom: 5 }}>
             {currentProfile} 님
           </h3>
-          <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>
+          <p style={{ margin: 0, fontSize: "16px", color: "#888" }}>
             총 {savedRecords.length}개의 추억
           </p>
         </div>
@@ -221,7 +221,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
                 style={{
                   whiteSpace: "pre-wrap",
                   margin: 0,
-                  fontSize: "14px",
+                  fontSize: "20px",
                 }}
               >
                 {aiInsight}
@@ -264,14 +264,14 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               >
                 <div
                   style={{
-                    fontSize: "12px",
+                    fontSize: "16px",
                     color: "#aaa",
                     marginBottom: 8,
                   }}
                 >
                   {stat.title}
                 </div>
-                <div style={{ fontSize: "15px", fontWeight: "bold" }}>
+                <div style={{ fontSize: "20px", fontWeight: "bold" }}>
                   {stat.value}
                 </div>
               </div>

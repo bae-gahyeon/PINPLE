@@ -16,7 +16,7 @@ import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
 
-export default function Pinple({ currentProfile, setProfile }) {
+export default function Pinple({ currentProfile, setProfile, onLogout }) {
   // 수정할 기록 담아둘 상태
   const [editingRecord, setEditingRecord] = useState(null);
 
@@ -121,6 +121,7 @@ export default function Pinple({ currentProfile, setProfile }) {
             margin: isMobile ? "5px 0" : "1em 0",
           }}
         >
+          안녕하세요, {currentProfile}님!
           장소를 검색하고 기록을 추가하세요.
         </h3>
         <div
@@ -143,6 +144,7 @@ export default function Pinple({ currentProfile, setProfile }) {
               alignItems: "center",
               fontWeight: "bold",
               fontSize: isMobile ? "16px" : "20px",
+              cursor: "pointer",
             }}
           >
             {currentProfile ? currentProfile.charAt(0) : "P"}
@@ -185,6 +187,12 @@ export default function Pinple({ currentProfile, setProfile }) {
                 icon="❓"
                 text="고객 센터"
                 onClick={() => alert("고객센터 연결")}
+                isLast={true}
+              />
+              <DropdownItem
+                icon="🚪"
+                text="로그아웃"
+                onClick={onLogout}
                 isLast={true}
               />
             </div>

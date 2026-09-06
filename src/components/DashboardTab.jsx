@@ -1,5 +1,15 @@
 // src/components/DashboardTab.jsx
 import { useState, useEffect } from "react";
+// Recharts 라이브러리
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 // AI 대시보드 상태
 export default function DashboardTab({ savedRecords, currentProfile }) {
@@ -36,18 +46,18 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
       // AI에게 내릴 섬세한 프롬프트 지시사항
       const prompt = `
       너는 사용자의 장소 방문 기록과 지출 내역을 분석해주는 다정한 AI 비서야.
-      다음은 사용자가 최근 다녀온 부산 지역의 장소 기록이야:
+      다음은 사용자가 최근 다녀온 장소 기록들이야:
       
       [기록 시작]
       ${promptData}
       [기록 끝]
       
-      이 데이터를 바탕으로 다음 3가지 요소를 포함하여 3~4줄로 다정하게 요약해줘:
+      이 데이터를 바탕으로 다음 3가지 요소를 포함하여 3~4줄로 요약해줘:
       1. 자주 방문한 지역
       2. 전반적인 지출 성향 및 평균 지출액 
       3. 주로 방문한 카테고리 (카페, 식당, 문화공간 등)
       
-      그리고 마지막 줄에는 다가오는 주말에 갈만한 부산의 새로운 핫플 장소를 딱 하나만 센스 있게 추천해줘.
+      그리고 마지막 줄에는 다가오는 주말에 갈만한 새로운 핫플 장소를 딱 하나만 센스 있게 추천해줘.
       `;
 
       // 구글 Gemini API 호출
@@ -121,12 +131,32 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
 
   // 4. 최다 방문 카테고리 (예: "카페", "음식점")
   const categories = savedRecords.map((r) => r.category).filter(Boolean);
-
   // 카테고리 이름이 길면 첫 번째 항목만 자르기 (예: "음식점 > 한식" -> "음식점")
   const formattedCategories = categories.map((c) => c.split(" > ")[0]);
   const topCategory = getTopItem(formattedCategories);
 
   const profileColor = localStorage.getItem("profileColor") || "#e50914";
+
+  const processChartData = () => {
+    const dataMap = {};
+    savedRecords.forEach((record) => {
+      if (!record.category) return;
+      const cat = record.category.split(">")[0];
+      const cost = Number(record.cost) || 0;
+
+      if (dataMap[cat]) {
+        dataMap[cat] += cost;
+      } else {
+        dataMap[cat] = cost;
+      }
+    });
+
+    // 객체를 배열로 변환하고 지출 높은 순으로 정렬
+    return Object.keys(dataMap)
+      .map((key) => ({ name: key, 지출액: dataMap[key] }))
+      .sort((a, b) => b.지출액 - a.지출액);
+  };
+  const chartData = processChartData();
 
   /* 4. AI 요약 대시보드 화면 렌더링 부분 */
   return (
@@ -184,7 +214,7 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
           </p>
         </div>
 
-        {/* 오른쪽 인사이트 영역 */}
+        {/* 오른쪽 인사이트 & 차트 영역 */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           <h3 style={{ margin: "0 0 10px 0" }}>AI 추억 인사이트</h3>
           <div
@@ -229,6 +259,55 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
             )}
           </div>
 
+          {/* 카테고리별 지출액 차트 추가 영역 */}
+          {chartData.length > 0 && (
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "15px",
+                background: "white",
+                borderRadius: "10px",
+                border: "1px solid #eee",
+              }}
+            >
+              <h4 style={{ margin: "0 0 15px 0", color: "#333" }}>
+                📊 카테고리별 지출 통계
+              </h4>
+              <div style={{ width: "100%", height: 200 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 5, right: 0, left: -20, bottom: 5 }}
+                  >
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(value) => `${value.toLocaleString()}`}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "rgba(0,0,0,0.05)" }}
+                      formatter={(value) => `${value.toLocaleString()}원`}
+                    />
+                    <Bar dataKey="지출액" radius={[4, 4, 0, 0]}>
+                      {chartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={index === 0 ? "#e50914" : "#0b1031"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
           {/* 하단 3개 네이비색 카드 */}
           <div
             style={{

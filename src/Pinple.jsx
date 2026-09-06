@@ -15,7 +15,7 @@ import TimelineTab from "./components/TimelineTab";
 import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
-import AiChatbot from "./components/Chatbot";
+import Chatbot from "./components/Chatbot";
 
 export default function Pinple({ currentProfile, setProfile, onLogout }) {
   // 수정할 기록 담아둘 상태
@@ -31,6 +31,20 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
   // 지도 안에서만 사용되는 상태들
   const [keyword, setKeyword] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+
+  const [aiData, setAiData] = useState(null);
+  const handleAiParsed = (parsedData) => {
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(parsedData.placeName, (data, status) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setSelectedPlace(data[0]); // 가장 정확한 첫 번째 장소 좌표 선택
+        setAiData(parsedData); // 가격, 날짜, 메모 세팅
+        setIsModalOpen(true); // 기록 모달창 오픈
+      } else {
+        alert(`"${parsedData.placeName}" 장소를 지도에서 찾을 수 없어요!`);
+      }
+    });
+  };
 
   // 1. 파이어베이스에서 내 기록 불러오기
   const fetchRecords = () => {
@@ -264,6 +278,8 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
           // 수정모드 상태 전달
           editingRecord={editingRecord}
           setEditingRecord={setEditingRecord}
+          aiData={aiData}
+          setAiData={setAiData}
         />
       )}
       {/* 하단 탭 내비게이션 */}
@@ -310,7 +326,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
           </div>
         ))}
       </nav>
-      <AiChatbot currentProfile={currentProfile} />
+      <Chatbot currentProfile={currentProfile} onAiParsed={handleAiParsed} />
     </div>
   );
 }

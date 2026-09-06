@@ -1,21 +1,61 @@
-// src/components/AiChatbot.jsx
+// src/components/Chatbot.jsx
 import { useState } from "react";
 
-export default function AiChatbot({ currentProfile }) {
+export default function Chatbot({ currentProfile, onAiParsed }) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputText.trim()) return;
+    setIsLoading(true);
 
-    // 💡 테스트용 알림 (여기에 곧 Gemini API 로직이 들어갈 예정!)
-    alert(`입력한 내용: ${inputText}\n(여기에 AI 분석 로직이 들어갈 거야!)`);
-    setInputText("");
+    try {
+      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      const today = new Date().toISOString().split("T")[0];
+
+      const prompt = `
+      너는 사용자의 일상 대화를 다이어리 데이터로 변환해주는 AI야.
+      오늘 날짜는 ${today}야. ('오늘', '어제'는 이 날짜 기준으로 계산해)
+      
+      사용자 입력: "${inputText}"
+      
+      위 문장에서 다음 정보를 추출해 반드시 순수 JSON 형식으로만 대답해.
+      {"placeName": "장소명", "cost": 0, "date": "YYYY-MM-DD", "memo": "간단한 요약 메모"}
+      `;
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        },
+      );
+
+      const data = await response.json();
+      let resultText = data.candidates[0].content.parts[0].text;
+      resultText = resultText
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      const parsedData = JSON.parse(resultText);
+
+      onAiParsed(parsedData); // 부모(Pinple)에게 전달
+      setInputText("");
+      setIsOpen(false); // 채팅창 닫기
+    } catch (error) {
+      console.error("AI 변환 실패:", error);
+      alert("AI가 문장을 이해하지 못했어요. 다시 시도해주세요!");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
-      {/* 둥둥 떠 있는 플로팅 챗봇 버튼 */}
+      {/* 플로팅 챗봇 버튼 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -103,8 +143,8 @@ export default function AiChatbot({ currentProfile }) {
               안녕하세요, <strong>{currentProfile}</strong>님! 😊
               <br />
               <br />
-              "9월 3일 서면 고깃집 3만원" 처럼 오늘 다녀온 곳을 편하게
-              말씀해주세요. 제가 찰떡같이 정리해서 기록해 드릴게요!
+              "9월 3일 서면 고깃집 3만원" 처럼 <br />오늘 다녀온 곳을 편하게
+              말씀해주세요. <br />제가 정리해서 기록해 드릴게요!
             </div>
           </div>
 

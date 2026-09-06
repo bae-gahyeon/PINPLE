@@ -30,11 +30,19 @@ export default function RecordModal({
   setSearchResults,
   editingRecord = null,
   setEditingRecord,
+  aiData,
+  setAiData,
 }) {
   // 수정 모드일 경우 기존 데이터, 아니면 빈 값 기본으로 세팅
-  const [date, setDate] = useState(editingRecord ? editingRecord.date : "");
-  const [cost, setCost] = useState(editingRecord ? editingRecord.cost : "");
-  const [memo, setMemo] = useState(editingRecord ? editingRecord.memo : "");
+  const [date, setDate] = useState(
+    editingRecord ? editingRecord.date : aiData?.date || "",
+  );
+  const [cost, setCost] = useState(
+    editingRecord ? editingRecord.cost : aiData?.cost || "",
+  );
+  const [memo, setMemo] = useState(
+    editingRecord ? editingRecord.memo : aiData?.memo || "",
+  );
 
   const handleSave = () => {
     if (!date || !cost || !memo) return alert("항목을 모두 입력해주세요!");
@@ -86,6 +94,7 @@ export default function RecordModal({
     if (setKeyword) setKeyword("");
     if (setSearchResults) setSearchResults([]);
     if (setEditingRecord) setEditingRecord(null); // 수정 모드 해제
+    if (setAiData) setAiData(null);
   };
 
   // 장소 이름 분기 처리 (수정 - 기록된 이름, 추가 - 카카오맵 이름)

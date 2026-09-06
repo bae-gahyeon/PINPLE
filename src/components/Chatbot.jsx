@@ -6,6 +6,10 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // 여러 지점 검색 시 챗봇 안에 리스트 생성
+  const [placeOptions, setPlaceOptions] = useState([]);
+  const [tempAiData, setTempAiData] = useState(null);
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
     setIsLoading(true);
@@ -42,15 +46,38 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
 
       const parsedData = JSON.parse(resultText);
 
-      onAiParsed(parsedData); // 부모(Pinple)에게 전달
-      setInputText("");
-      setIsOpen(false); // 채팅창 닫기
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(parsedData.placeName, (searchData, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          if (searchData.length === 1) {
+            // 결과가 1개면 바로 모달창 열기
+            onAiParsed(parsedData, searchData[0]);
+            setInputText("");
+            setIsOpen(false);
+          } else {
+            // 결과가 여러 개면 챗봇 창에 최대 5개 객관식으로 띄워주기
+            setPlaceOptions(searchData.slice(0, 5));
+            setTempAiData(parsedData);
+            setInputText("");
+          }
+        } else {
+          alert(`지도에서 "${parsedData.placeName}" 장소를 찾을 수 없어요!`);
+        }
+        setIsLoading(false);
+      });
     } catch (error) {
       console.error("AI 변환 실패:", error);
       alert("AI가 문장을 이해하지 못했어요. 다시 시도해주세요!");
-    } finally {
       setIsLoading(false);
     }
+  };
+
+  // 객관식 리스트에서 하나를 선택했을 때 실행되는 함수
+  const handleSelectPlace = (place) => {
+    onAiParsed(tempAiData, place); // 선택한 장소와 AI데이터를 부모로 전달
+    setPlaceOptions([]); // 리스트 초기화
+    setTempAiData(null);
+    setIsOpen(false); // 챗봇 닫고 모달창으로 이동
   };
 
   return (
@@ -143,13 +170,83 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
               안녕하세요, <strong>{currentProfile}</strong>님! 😊
               <br />
               <br />
-              "9월 3일 서면 고깃집 3만원" 처럼 <br />오늘 다녀온 곳을 편하게
-              말씀해주세요. <br />제가 정리해서 기록해 드릴게요!
+              "9월 3일 서면 고깃집 3만원" 처럼 <br />
+              오늘 다녀온 곳을 편하게 말씀해주세요. <br />
+              제가 정리해서 기록해 드릴게요!
             </div>
+            {/* 💡 빠져있던 객관식 리스트 UI 복구 완료! */}
+            {placeOptions.length > 0 && (
+              <div
+                style={{
+                  backgroundColor: "white",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid #e50914",
+                }}
+              >
+                <p
+                  style={{
+                    margin: "0 0 10px 0",
+                    fontWeight: "bold",
+                    color: "#000000",
+                    fontSize: "13px",
+                  }}
+                >
+                  여러 지점이 검색되었어요! 어느 곳인가요?
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                >
+                  {placeOptions.map((place, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelectPlace(place)}
+                      style={{
+                        padding: "8px",
+                        textAlign: "left",
+                        background: "#f0f0f0",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <strong style={{ display: "block", color: "#0b1031" }}>
+                        {place.place_name}
+                      </strong>
+                      <span style={{ color: "gray" }}>
+                        {place.address_name}
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setPlaceOptions([])}
+                    style={{
+                      padding: "5px",
+                      background: "transparent",
+                      border: "none",
+                      color: "gray",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    취소하기
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 입력 영역 */}
-          <div
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // 엔터 쳤을 때 폼 전송으로 인한 새로고침 방지
+              handleSend();
+            }}
             style={{
               display: "flex",
               padding: "10px",
@@ -161,7 +258,6 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="대화하듯 입력해보세요..."
               style={{
                 flex: 1,
@@ -171,13 +267,17 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
                 outline: "none",
                 fontSize: "14px",
               }}
+              disabled={isLoading || placeOptions.length > 0}
             />
             <button
+              type="submit" // 버튼 타입을 submit으로 지정
               onClick={handleSend}
+              disabled={isLoading || placeOptions.length > 0}
               style={{
                 marginLeft: "10px",
                 padding: "10px 15px",
-                backgroundColor: "#0b1031",
+                backgroundColor:
+                  isLoading || placeOptions.length > 0 ? "#888" : "#0b1031",
                 color: "white",
                 border: "none",
                 borderRadius: "20px",
@@ -187,7 +287,7 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
             >
               전송
             </button>
-          </div>
+          </form>
         </div>
       )}
     </>

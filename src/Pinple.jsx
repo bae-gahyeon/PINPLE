@@ -33,17 +33,11 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
   const [searchResults, setSearchResults] = useState([]);
 
   const [aiData, setAiData] = useState(null);
-  const handleAiParsed = (parsedData) => {
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(parsedData.placeName, (data, status) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        setSelectedPlace(data[0]); // 가장 정확한 첫 번째 장소 좌표 선택
-        setAiData(parsedData); // 가격, 날짜, 메모 세팅
-        setIsModalOpen(true); // 기록 모달창 오픈
-      } else {
-        alert(`"${parsedData.placeName}" 장소를 지도에서 찾을 수 없어요!`);
-      }
-    });
+
+  const handleAiParsed = (parsedData, place) => {
+    setSelectedPlace(place); // 검색된 정확한 지점 데이터 세팅
+    setAiData(parsedData); // AI가 뽑아준 날짜, 금액, 메모 세팅
+    setIsModalOpen(true); // 기록 모달창 오픈
   };
 
   // 1. 파이어베이스에서 내 기록 불러오기

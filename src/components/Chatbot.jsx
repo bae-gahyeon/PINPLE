@@ -129,7 +129,7 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
           {/* 채팅창 헤더 */}
           <div
             style={{
-              backgroundColor: "#e50914",
+              backgroundColor: "#fca1bc",
               color: "white",
               padding: "15px",
               fontWeight: "bold",
@@ -138,7 +138,7 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
               alignItems: "center",
             }}
           >
-            <span>✨ AI 스마트 기록 비서</span>
+            <span>AI 스마트 기록 비서</span>
             <span
               style={{ cursor: "pointer", fontSize: "18px" }}
               onClick={() => setIsOpen(false)}

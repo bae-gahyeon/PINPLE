@@ -15,6 +15,7 @@ import TimelineTab from "./components/TimelineTab";
 import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
+import AiChatbot from "./components/Chatbot";
 
 export default function Pinple({ currentProfile, setProfile, onLogout }) {
   // 수정할 기록 담아둘 상태
@@ -121,8 +122,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
             margin: isMobile ? "5px 0" : "1em 0",
           }}
         >
-          안녕하세요, {currentProfile}님!
-          장소를 검색하고 기록을 추가하세요.
+          안녕하세요, {currentProfile}님! 장소를 검색하고 기록을 추가하세요.
         </h3>
         <div
           style={{
@@ -217,7 +217,6 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
             setSearchResults={setSearchResults}
             // 맵에서도 모달창 열기
             setEditingRecord={setEditingRecord}
-            setIsModalOpen={setIsModalOpen}
           />
         )}
 
@@ -311,6 +310,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
           </div>
         ))}
       </nav>
+      <AiChatbot currentProfile={currentProfile} />
     </div>
   );
 }

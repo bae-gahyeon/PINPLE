@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { db } from "./components/firebase";
 
-export default function Profile({ setProfile }) {
+export default function Profile({ setProfile, uid}) { // uid 추가
   const [profiles, setProfiles] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -11,13 +11,14 @@ export default function Profile({ setProfile }) {
   const [modalMode, setModalMode] = useState("add"); // "add" 또는 "edit"
   const [editTargetId, setEditTargetId] = useState(null); // 수정 프로필 고유ID 기억
   const [newName, setNewName] = useState("");
-  const [selectedColor, setSelectedColor] = useState("#e50914"); 
+  const [selectedColor, setSelectedColor] = useState("#e50914");
 
   // 프로필 선택용 커스텀 색상 후보들
   const colorOptions = ["#e50914", "#5691ff", "#2b9e4a", "#fbc02d", "#8e24aa"];
 
   const fetchProfiles = () => {
     db.collection("profiles")
+      .where("uid", "==", uid)
       .get()
       .then((snapshot) => {
         const data = snapshot.docs.map((doc) => ({
@@ -29,8 +30,8 @@ export default function Profile({ setProfile }) {
   };
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
+    if (uid) fetchProfiles();
+  }, [uid]); // 의존성 배열에 uid 추가
 
   const handleSelect = (p) => {
     if (isEditing) {
@@ -67,7 +68,7 @@ export default function Profile({ setProfile }) {
     if (modalMode === "add") {
       // 새 프로필 추가
       db.collection("profiles")
-        .add({ name: newName, color: selectedColor })
+        .add({ name: newName, color: selectedColor, uid }) //uid 추가
         .then(() => {
           fetchProfiles();
           setShowModal(false);
@@ -86,12 +87,14 @@ export default function Profile({ setProfile }) {
 
   // 수정: 모달창 안에서 프로필 삭제 로직
   const handleDelete = () => {
-    if (window.confirm(`이 프로필을 정말 삭제할까요? 기록이 모두 날아갑니다.`)) {
+    if (
+      window.confirm(`이 프로필을 정말 삭제할까요? 기록이 모두 날아갑니다.`)
+    ) {
       db.collection("profiles")
         .doc(editTargetId)
         .delete()
         .then(() => {
-          fetchProfiles(); 
+          fetchProfiles();
           setShowModal(false);
         });
     }
@@ -324,7 +327,14 @@ export default function Profile({ setProfile }) {
             />
 
             {/* 버튼 영역 */}
-            <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
               <div style={{ display: "flex", gap: "10px" }}>
                 <button
                   onClick={() => setShowModal(false)}
@@ -360,18 +370,18 @@ export default function Profile({ setProfile }) {
 
               {/* 💡 수정 모드일 때만 하단에 '삭제' 버튼 표시 */}
               {modalMode === "edit" && (
-                <button 
+                <button
                   onClick={handleDelete}
-                  style={{ 
-                    width: "100%", 
-                    padding: "15px", 
-                    marginTop: "10px", 
-                    background: "transparent", 
-                    border: "1px solid #e50914", 
-                    color: "#e50914", 
-                    fontWeight: "bold", 
-                    cursor: "pointer", 
-                    borderRadius: "5px" 
+                  style={{
+                    width: "100%",
+                    padding: "15px",
+                    marginTop: "10px",
+                    background: "transparent",
+                    border: "1px solid #e50914",
+                    color: "#e50914",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    borderRadius: "5px",
                   }}
                 >
                   이 프로필 삭제하기

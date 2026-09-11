@@ -17,7 +17,7 @@ import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
 import Chatbot from "./components/Chatbot";
 
-export default function Pinple({ currentProfile, setProfile, onLogout }) {
+export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
   // 수정할 기록 담아둘 상태
   const [editingRecord, setEditingRecord] = useState(null);
 
@@ -43,6 +43,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
   // 1. 파이어베이스에서 내 기록 불러오기
   const fetchRecords = () => {
     db.collection("diary_records")
+      .where("uid", "==", uid)
       .where("profileName", "==", currentProfile)
       .get()
       .then((snapshot) => {
@@ -65,7 +66,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProfile]);
+  }, [currentProfile, uid]); // uid 추가
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -274,6 +275,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout }) {
           setEditingRecord={setEditingRecord}
           aiData={aiData}
           setAiData={setAiData}
+          uid={uid} // uid 추가
         />
       )}
       {/* 하단 탭 내비게이션 */}

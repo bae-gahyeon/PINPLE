@@ -42,12 +42,13 @@ export default function TimelineTab({
       return alert("삭제할 기록을 먼저 선택해주세요!");
     }
 
-    if (window.confirm("정말 ${selectedIds.length}개의 기록을 삭제할까요?")) {
+    if (window.confirm(`정말 ${selectedIds.length}개의 기록을 삭제할까요?`)) {
+      // 백틱으로
       try {
         // 선택된 ID 배열을 돌면서 firebase에 삭제 요청
         await Promise.all(
-          selectedIds.map((id) =>
-            db.collection("diary-records").doc(id).delete(),
+          selectedIds.map(
+            (id) => db.collection("diary_records").doc(id).delete(), // 언더바로 수정
           ),
         );
 

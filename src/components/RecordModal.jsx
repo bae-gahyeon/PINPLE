@@ -32,6 +32,7 @@ export default function RecordModal({
   setEditingRecord,
   aiData,
   setAiData,
+  uid, // uid 추가
 }) {
   // 수정 모드일 경우 기존 데이터, 아니면 빈 값 기본으로 세팅
   const [date, setDate] = useState(
@@ -65,6 +66,7 @@ export default function RecordModal({
       // 추가 모드 (기존 add 로직)
       db.collection("diary_records")
         .add({
+          uid,
           profileName: currentProfile,
           placeName: selectedPlace.place_name,
           lat: selectedPlace.y,

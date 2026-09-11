@@ -101,13 +101,14 @@ export default function App() {
       }}
     >
       {!currentProfile ? (
-        <Profile setProfile={setCurrentProfile} />
+        <Profile setProfile={setCurrentProfile} uid={user.uid} /> //uid 추가
       ) : (
         // Pinple에 onLogout 이라는 이름으로 로그아웃 함수 넘겨주기
         <Pinple
           currentProfile={currentProfile}
           setProfile={setCurrentProfile}
           onLogout={handleLogout}
+          uid={user.uid}
         />
       )}
     </div>

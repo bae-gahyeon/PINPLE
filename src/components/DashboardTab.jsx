@@ -363,7 +363,6 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
               flexWrap: "wrap",
               gap: "10px",
               width: "100%",
-              marginTop: "auto",
             }}
           >
             {[

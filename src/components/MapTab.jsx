@@ -127,7 +127,7 @@ export default function MapTab({
         <div
           style={{
             position: "absolute",
-            top: "20px",
+            bottom: "100px", // top 대신 bottom, 하단 탭바(65px) 바로 위
             left: "50%",
             transform: "translateX(-50%)",
             background: "rgba(229, 9,20,0.9)",
@@ -140,7 +140,7 @@ export default function MapTab({
             textAlign: "center",
           }}
         >
-          아직 기록한 곳이 없네요! <br /> 왼쪽 검색창에서 첫 장소를 찾아볼까요?
+          아직 기록한 곳이 없네요! <br /> 왼쪽 검색창 또는 챗봇을 이용해서 첫 기록을 남겨볼까요?
         </div>
       )}
 

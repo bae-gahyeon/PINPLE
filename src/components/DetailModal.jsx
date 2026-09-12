@@ -96,11 +96,29 @@ export default function DetailModal({
             {">"}
           </button>
 
-          <img
-            src={dummyImageUrl}
-            alt="장소 사진(추후 파이어베이스랑 연동)"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
+          {record.photoUrl ? (
+            <img
+              src={record.photoUrl}
+              alt={record.placeName}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#eee",
+                color: "#999",
+                fontSize: 14,
+              }}
+            >
+              등록된 사진이 없어요
+            </div>
+          )}
+
           <button
             onClick={onClose}
             style={{

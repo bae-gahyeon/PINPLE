@@ -2,7 +2,7 @@
 import { useState } from "react";
 import firebase from "firebase/compat/app";
 import { db } from "./firebase";
-import { formatDate } from "../utils";
+import { formatDate, uploadToCloudinary } from "../utils";
 
 // 공통 버튼 스타일
 const btnStyle = {
@@ -45,47 +45,61 @@ export default function RecordModal({
     editingRecord ? editingRecord.memo : aiData?.memo || "",
   );
 
-  const handleSave = () => {
+  // 새로 고른 파일(업로드 전) / 미리보기용 이미지 / 지금 업로드 중인지 여부
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(
+    editingRecord?.photoUrl || null,
+  );
+  const [uploading, setUploading] = useState(false);
+
+  const handleSave = async () => {
     if (!date || !cost || !memo) return alert("항목을 모두 입력해주세요!");
 
-    if (editingRecord) {
-      // 수정 모드 (기존 문서 update)
-      db.collection("diary_records")
-        .doc(editingRecord.id)
-        .update({
+    setUploading(true);
+    try {
+      // 새 사진을 골랐으면 그걸 업로드, 안 골랐으면 기존 사진(수정모드) 그대로 유지
+      let photoUrl = editingRecord?.photoUrl || null;
+      if (photoFile) {
+        photoUrl = await uploadToCloudinary(photoFile);
+      }
+
+      if (editingRecord) {
+        await db.collection("diary_records").doc(editingRecord.id).update({
           date,
           cost,
           memo,
-        })
-        .then(() => {
-          alert("수정되었습니다!");
-          handleClose();
-          fetchRecords();
+          photoUrl,
         });
-    } else {
-      // 추가 모드 (기존 add 로직)
-      db.collection("diary_records")
-        .add({
+        alert("수정되었습니다!");
+        handleClose();
+        fetchRecords();
+      } else {
+        await db.collection("diary_records").add({
           uid,
           profileName: currentProfile,
           placeName: selectedPlace.place_name,
           lat: selectedPlace.y,
           lng: selectedPlace.x,
-          address: selectedPlace.address_name, // ex) "부산 해운대구 123"
-          category: selectedPlace.category_name, // ex) "카페", "음식"
+          address: selectedPlace.address_name,
+          category: selectedPlace.category_name,
           date,
           cost,
           memo,
+          photoUrl,
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        })
-        .then(() => {
-          alert("저장되었습니다!");
-          setIsModalOpen(false);
-          setSelectedPlace(null);
-          setKeyword(""); // 검색창 텍스트 날리기
-          setSearchResults([]); // 파란 핀들 날리기
-          fetchRecords();
         });
+        alert("저장되었습니다!");
+        setIsModalOpen(false);
+        setSelectedPlace(null);
+        setKeyword("");
+        setSearchResults([]);
+        fetchRecords();
+      }
+    } catch (error) {
+      console.error("저장 중 오류:", error);
+      alert("사진 업로드나 저장 중 문제가 발생했어요. 다시 시도해주세요.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -201,6 +215,38 @@ export default function RecordModal({
             onChange={(e) => setMemo(e.target.value)}
           ></textarea>
         </p>
+
+        <p style={{ marginTop: "15px", marginBottom: "5px" }}>
+          📷 사진:{" "}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+              if (file.size > 5 * 1024 * 1024) {
+                alert("사진 크기는 5MB 이하로 올려주세요!");
+                return;
+              }
+              setPhotoFile(file);
+              setPhotoPreview(URL.createObjectURL(file)); // 업로드 전, 내 컴퓨터에 있는 파일 미리보기
+            }}
+          />
+        </p>
+        {photoPreview && (
+          <img
+            src={photoPreview}
+            alt="미리보기"
+            style={{
+              width: "100%",
+              maxHeight: 150,
+              objectFit: "cover",
+              borderRadius: 8,
+              marginBottom: 10,
+            }}
+          />
+        )}
+
         <div
           style={{
             display: "flex",
@@ -216,10 +262,16 @@ export default function RecordModal({
             닫기
           </button>
           <button
-            style={{ ...btnStyle, background: "#0b1031", color: "white" }}
+            style={{
+              ...btnStyle,
+              background: "#0b1031",
+              color: "white",
+              opacity: uploading ? 0.6 : 1,
+            }}
             onClick={handleSave}
+            disabled={uploading}
           >
-            {editingRecord ? "수정완료" : "저장하기"}
+            {uploading ? "저장 중..." : editingRecord ? "수정완료" : "저장하기"}
           </button>
         </div>
       </div>

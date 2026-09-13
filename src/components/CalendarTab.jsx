@@ -7,18 +7,16 @@ import interactionPlugin from "@fullcalendar/interaction"; // 날짜 클릭 감�
 import DetailModal from "./DetailModal";
 import { db } from "./firebase";
 import koLocale from "@fullcalendar/core/locales/ko";
-
+import { useDiaryStore } from "../store/useDiaryStore";
 import { formatDate } from "../utils";
 
-export default function CalendarTab({
-  savedRecords,
-  fetchRecords,
-  setEditingRecord,
-  setIsModalOpen,
-}) {
+export default function CalendarTab({ setEditingRecord, setIsModalOpen }) {
   // 클릭한 날짜와 리스트에서 클릭한 기록 담아둘 상태
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const savedRecords = useDiaryStore((s) => s.savedRecords);
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
 
   // 같은 날짜에 기록이 여러개여도, 달력에는 '빨간 점' 하나만 찍히도록 표시 (날짜 중복 제거)
   const uniqueDates = [...new Set(savedRecords.map((r) => r.date))];

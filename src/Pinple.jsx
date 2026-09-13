@@ -16,13 +16,13 @@ import CalendarTab from "./components/CalendarTab";
 import DashboardTab from "./components/DashboardTab";
 import RecordModal from "./components/RecordModal";
 import Chatbot from "./components/Chatbot";
+import { useDiaryStore } from "./store/useDiaryStore";
 
 export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
   // 수정할 기록 담아둘 상태
   const [editingRecord, setEditingRecord] = useState(null);
 
   const [activeTab, setActiveTab] = useState("map");
-  const [savedRecords, setSavedRecords] = useState([]);
 
   // 모달(입력창) 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,22 +40,10 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
     setIsModalOpen(true); // 기록 모달창 오픈
   };
 
-  // 1. 파이어베이스에서 내 기록 불러오기
-  const fetchRecords = () => {
-    db.collection("diary_records")
-      .where("uid", "==", uid)
-      .where("profileName", "==", currentProfile)
-      .get()
-      .then((snapshot) => {
-        const records = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        // 최신순 정렬
-        records.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setSavedRecords(records);
-      });
-  };
+  const setUser = useDiaryStore((s) => s.setUser);
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
+  const periodFilter = useDiaryStore((s) => s.periodFilter);
+  const setPeriodFilter = useDiaryStore((s) => s.setPeriodFilter);
 
   // 모바일 화면 감지 상태 추가
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -64,6 +52,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
+    setUser(uid, currentProfile) // 스토어에 먼저 넣어주기
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProfile, uid]); // uid 추가
@@ -133,6 +122,26 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
         >
           안녕하세요, {currentProfile}님! 장소를 검색하고 기록을 추가하세요.
         </h3>
+
+        {activeTab !== "calendar" && (
+          <select
+            value={periodFilter}
+            onChange={(e) => setPeriodFilter(e.target.value)}
+            style={{
+              marginTop: 8,
+              padding: "6px 10px",
+              borderRadius: 20,
+              border: "1px solid #ddd",
+              fontSize: 13,
+              background: "white",
+            }}
+          >
+            <option value="all">전체 기간</option>
+            <option value="1m">최근 1개월</option>
+            <option value="6m">최근 6개월</option>
+          </select>
+        )}
+
         <div
           style={{
             position: "absolute",
@@ -214,12 +223,9 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
         {/* {1. 분리한 MapTab 부품 끼워넣기} */}
         {activeTab === "map" && (
           <MapTab
-            savedRecords={savedRecords}
             setSelectedPlace={setSelectedPlace}
             setIsModalOpen={setIsModalOpen}
             selectedPlace={selectedPlace}
-            fetchRecords={fetchRecords}
-            // MabTab으로 상태 전달
             keyword={keyword}
             setKeyword={setKeyword}
             searchResults={searchResults}
@@ -232,8 +238,6 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
         {/* ⏳ 2. 타임라인 탭 */}
         {activeTab === "timeline" && (
           <TimelineTab
-            savedRecords={savedRecords}
-            fetchRecords={fetchRecords} // 삭제 후 새로고침
             // 타임라인에서도 모달창 열기
             setEditingRecord={setEditingRecord}
             setIsModalOpen={setIsModalOpen}
@@ -243,9 +247,6 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
         {/* 📅 3. 캘린더 탭 부품 */}
         {activeTab === "calendar" && (
           <CalendarTab
-            savedRecords={savedRecords}
-            // 캘린더에서도 모달창 열기
-            fetchRecords={fetchRecords}
             setEditingRecord={setEditingRecord}
             setIsModalOpen={setIsModalOpen}
           />
@@ -253,10 +254,7 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
 
         {/* {4. 분리한 DashboardTab 부품 끼워넣기 */}
         {activeTab === "dashboard" && (
-          <DashboardTab
-            savedRecords={savedRecords}
-            currentProfile={currentProfile}
-          />
+          <DashboardTab currentProfile={currentProfile} />
         )}
       </div>
       {/* 모달창 (저장 UI) */}
@@ -266,8 +264,6 @@ export default function Pinple({ currentProfile, setProfile, onLogout, uid }) {
           setIsModalOpen={setIsModalOpen}
           setSelectedPlace={setSelectedPlace}
           currentProfile={currentProfile}
-          fetchRecords={fetchRecords}
-          // 검색 상태 전달 (비우기위해)
           setKeyword={setKeyword}
           setSearchResults={setSearchResults}
           // 수정모드 상태 전달

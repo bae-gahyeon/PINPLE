@@ -25,3 +25,15 @@ export const uploadToCloudinary = async (file) => {
   if (!data.secure_url) throw new Error("사진 업로드 실패");
   return data.secure_url; // Firestore에 저장할 사진 주소
 };
+
+// 기록 배열을 기간 기준으로 걸러주는 함수
+export const filterRecordsByPeriod = (records, period) => {
+  if (period === "all") return records;
+
+  const now = new Date();
+  const cutoff = new Date();
+  if (period === "1m") cutoff.setMonth(now.getMonth() - 1);
+  if (period === "6m") cutoff.setMonth(now.getMonth() - 6);
+
+  return records.filter((r) => new Date(r.date) >= cutoff);
+};

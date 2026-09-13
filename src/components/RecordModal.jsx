@@ -2,6 +2,7 @@
 import { useState } from "react";
 import firebase from "firebase/compat/app";
 import { db } from "./firebase";
+import { useDiaryStore } from "../store/useDiaryStore";
 import { formatDate, uploadToCloudinary } from "../utils";
 
 // 공통 버튼 스타일
@@ -25,7 +26,6 @@ export default function RecordModal({
   setIsModalOpen,
   setSelectedPlace,
   currentProfile,
-  fetchRecords,
   setKeyword,
   setSearchResults,
   editingRecord = null,
@@ -34,6 +34,8 @@ export default function RecordModal({
   setAiData,
   uid, // uid 추가
 }) {
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
+
   // 수정 모드일 경우 기존 데이터, 아니면 빈 값 기본으로 세팅
   const [date, setDate] = useState(
     editingRecord ? editingRecord.date : aiData?.date || "",

@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { db } from "./firebase";
 import DetailModal from "./DetailModal";
-import { formatDate } from "../utils";
+import { useDiaryStore } from "../store/useDiaryStore";
+import { formatDate, filterRecordsByPeriod } from "../utils";
 
-export default function TimelineTab({
-  savedRecords,
-  fetchRecords,
-  setEditingRecord,
-  setIsModalOpen,
-}) {
+export default function TimelineTab({ setEditingRecord, setIsModalOpen }) {
+  const rawRecords = useDiaryStore((s) => s.savedRecords);
+  const periodFilter = useDiaryStore((s) => s.periodFilter);
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
+  const savedRecords = filterRecordsByPeriod(rawRecords, periodFilter);
+
   // 체크된 기록들 ID 모아둘 배열 상태
   const [selectedIds, setSelectedIds] = useState([]);
   const [isDeleteMode, setIsdeleteMode] = useState(false);

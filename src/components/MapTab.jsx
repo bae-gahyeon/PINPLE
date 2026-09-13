@@ -2,7 +2,8 @@
 import { act, useEffect, useState } from "react";
 // DetailModal 부품 불러오기
 import DetailModal from "./DetailModal";
-import { formatDate } from "../utils";
+import { useDiaryStore } from "../store/useDiaryStore";
+import { formatDate, filterRecordsByPeriod } from "../utils";
 
 import {
   Map,
@@ -13,18 +14,20 @@ import {
 import { db } from "./firebase";
 
 export default function MapTab({
-  savedRecords,
   setSelectedPlace,
   setIsModalOpen,
   selectedPlace,
-  fetchRecords,
-  // Pinple에서 받아옴
   keyword,
   setKeyword,
   searchResults,
   setSearchResults,
   setEditingRecord,
 }) {
+  const rawRecords = useDiaryStore((s) => s.savedRecords);
+  const periodFilter = useDiaryStore((s) => s.periodFilter);
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
+  const savedRecords = filterRecordsByPeriod(rawRecords, periodFilter);
+
   // PC vs 모바일 화면 감지 상태
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -140,7 +143,8 @@ export default function MapTab({
             textAlign: "center",
           }}
         >
-          아직 기록한 곳이 없네요! <br /> 왼쪽 검색창 또는 챗봇을 이용해서 첫 기록을 남겨볼까요?
+          아직 기록한 곳이 없네요! <br /> 왼쪽 검색창 또는 챗봇을 이용해서 첫
+          기록을 남겨볼까요?
         </div>
       )}
 

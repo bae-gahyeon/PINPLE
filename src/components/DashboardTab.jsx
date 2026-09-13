@@ -13,7 +13,10 @@ import {
   Legend,
 } from "recharts";
 
-export default function DashboardTab({ savedRecords, currentProfile }) {
+import { useDiaryStore } from "../store/useDiaryStore";
+import { filterRecordsByPeriod } from "../utils";
+
+export default function DashboardTab({ currentProfile }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -21,6 +24,11 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const rawRecords = useDiaryStore((s) => s.savedRecords);
+  const periodFilter = useDiaryStore((s) => s.periodFilter);
+  const fetchRecords = useDiaryStore((s) => s.fetchRecords);
+  const savedRecords = filterRecordsByPeriod(rawRecords, periodFilter);
 
   // 1. 통계치 계산
   const avgCost =
@@ -216,7 +224,8 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
                         tick={{ fontSize: 11 }}
                         axisLine={false}
                         tickLine={false}
-                        tickFormatter={(value) => `${value.toLocaleString()}`} width={65}
+                        tickFormatter={(value) => `${value.toLocaleString()}`}
+                        width={65}
                       />
                       <Tooltip
                         cursor={{ fill: "rgba(0,0,0,0.05)" }}
@@ -313,7 +322,9 @@ export default function DashboardTab({ savedRecords, currentProfile }) {
                   </h4>
                   <div style={{ width: "100%", height: 180 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart margin={{top:15,right:0,left:0,bottom:0}}>
+                      <PieChart
+                        margin={{ top: 15, right: 0, left: 0, bottom: 0 }}
+                      >
                         <Pie
                           data={regionChartData}
                           dataKey="방문횟수"

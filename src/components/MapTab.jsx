@@ -64,11 +64,8 @@ export default function MapTab({
     });
   };
 
-  // 필터링: 저장된 장소는 검색 결과(파란 핀)에서 빼기
-  const savedNames = savedRecords.map((r) => r.placeName);
-  const filteredPlaces = searchResults.filter(
-    (p) => !savedNames.includes(p.place_name),
-  );
+  // 이미 기록한 장소도 검색 결과 그대로 노출 (중복 기록 허용)
+  const filteredPlaces = searchResults;
 
   const handleDelete = (id) => {
     if (window.confirm("정말 이 기록을 삭제할까요?")) {
@@ -119,6 +116,16 @@ export default function MapTab({
 
           return record.category.includes(activeTab);
         });
+
+  // 같은 좌표(장소)당 마커 하나만 남기기 — 대표로 최신 기록을 사용
+  // savedRecords가 이미 최신순 정렬, 좌표별로 처음 만나는 기록이 곧 최신 기록임
+  const uniqueMarkers = Object.values(
+    visibleRecords.reduce((acc, r) => {
+      const key = `${r.lat},${r.lng}`;
+      if (!acc[key]) acc[key] = r;
+      return acc;
+    }, {}),
+  );
 
   // 클릭한 마커 데이터 담아둘 상태
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -220,8 +227,8 @@ export default function MapTab({
             position={window.kakao.maps.ControlPosition.RIGHT}
           ></ZoomControl>
         )}
-        {/* 내 저장 기록 (빨간 핀) */}
-        {visibleRecords.map((record) => (
+        {/* 내 저장 기록 (빨간 핀) - 장소당 하나, 최신 기록 기준 */}
+        {uniqueMarkers.map((record) => (
           <MapMarker
             key={record.id}
             position={{ lat: record.lat, lng: record.lng }}
@@ -238,7 +245,7 @@ export default function MapTab({
         ))}
 
         {/*  클릭하면 뜨는 말풍선 (CustomOverlayMap) */}
-        {visibleRecords.map(
+        {uniqueMarkers.map(
           (record) =>
             openMarkerId === record.id && (
               <CustomOverlayMap
@@ -248,7 +255,6 @@ export default function MapTab({
               >
                 {/* 말풍선 전체 컨테이너 */}
                 <div
-                  onClick={() => setSelectedRecord(record)} // 💡 클릭 시 상세 모달창 열기!
                   style={{
                     display: "flex",
                     alignItems: "stretch",
@@ -259,8 +265,9 @@ export default function MapTab({
                     cursor: "pointer",
                   }}
                 >
-                  {/* 왼쪽: 장소 이름 및 날짜 영역 */}
+                  {/* 왼쪽: 장소 이름 및 날짜 영역 (클릭 -> 상세보기) */}
                   <div
+                    onClick={() => setSelectedRecord(record)}
                     style={{
                       padding: "8px 12px",
                       display: "flex",
@@ -289,8 +296,41 @@ export default function MapTab({
                     </span>
                   </div>
 
-                  {/* 오른쪽: 빨간색 화살표 버튼 영역 */}
+                  {/* 가운데: 또 기록하기 버튼 (신규 추가) */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // 부모 클릭(상세보기)으로 안 튀게 막기
+                      setSelectedPlace({
+                        place_name: record.placeName,
+                        y: record.lat,
+                        x: record.lng,
+                        address_name: record.address,
+                        category_name: record.category,
+                      });
+                      setEditingRecord(null); // 수정 모드 아님 → 새 기록 추가 모드로
+                      setOpenMarkerId(null); // 말풍선 닫기
+                      setIsModalOpen(true); // 기록 모달창 열기
+                    }}
+                    title="또 기록하기"
+                    style={{
+                      background: "#f5f5f5",
+                      border: "none",
+                      borderLeft: "1px solid #eee",
+                      color: "#333",
+                      padding: "0 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    +
+                  </button>
+
+                  {/* 오른쪽: 빨간색 화살표 버튼 영역 (클릭 -> 상세보기) */}
                   <div
+                    onClick={() => setSelectedRecord(record)}
                     style={{
                       background: "#e50914",
                       color: "white",
@@ -571,25 +611,45 @@ export default function MapTab({
           </>
         )}
       </div>
-      {/* 파일 맨 마지막 닫는 div 태그 직전에 모달창 렌더링 추가 */}
-      {selectedRecord && (
-        <DetailModal
-          // selectedRecord(과거) 대신 실시간 배열에서 꺼내오기
-          record={
-            savedRecords.find((r) => r.id === selectedRecord.id) ||
-            selectedRecord
-          }
-          onClose={() => setSelectedRecord(null)}
-          onEdit={(record) => {
-            setEditingRecord(record); // 어떤 기록을 수정할지 세팅
-            setIsModalOpen(true); // 수정용 폼 (RecordModal) 열기
-          }}
-          onDelete={(id) => {
-            handleDelete(id);
-            setSelectedRecord(null); // 삭제하면 모달창도 같이 닫기
-          }}
-        />
-      )}
+      {selectedRecord &&
+        (() => {
+          // 같은 좌표(=같은 장소)를 공유하는 기록들만 모아서 그룹 만들기
+          const placeGroup = savedRecords.filter(
+            (r) => r.lat === selectedRecord.lat && r.lng === selectedRecord.lng,
+          );
+          const currentIndex = placeGroup.findIndex(
+            (r) => r.id === selectedRecord.id,
+          );
+
+          return (
+            <DetailModal
+              record={placeGroup[currentIndex] || selectedRecord}
+              onClose={() => setSelectedRecord(null)}
+              onPrev={() =>
+                setSelectedRecord(
+                  placeGroup[
+                    currentIndex > 0 ? currentIndex - 1 : placeGroup.length - 1
+                  ],
+                )
+              }
+              onNext={() =>
+                setSelectedRecord(
+                  placeGroup[
+                    currentIndex < placeGroup.length - 1 ? currentIndex + 1 : 0
+                  ],
+                )
+              }
+              onEdit={(record) => {
+                setEditingRecord(record);
+                setIsModalOpen(true);
+              }}
+              onDelete={(id) => {
+                handleDelete(id);
+                setSelectedRecord(null);
+              }}
+            />
+          );
+        })()}
     </div>
   );
 }

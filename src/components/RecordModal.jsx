@@ -47,6 +47,8 @@ export default function RecordModal({
     editingRecord ? editingRecord.memo : aiData?.memo || "",
   );
 
+  const [rating, setRating] = useState(editingRecord?.rating || 0);
+
   // 새로 고른 파일(업로드 전) / 미리보기용 이미지 / 지금 업로드 중인지 여부
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(
@@ -71,6 +73,7 @@ export default function RecordModal({
           cost,
           memo,
           photoUrl,
+          rating,
         });
         alert("수정되었습니다!");
         handleClose();
@@ -88,6 +91,7 @@ export default function RecordModal({
           cost,
           memo,
           photoUrl,
+          rating,
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         });
         alert("저장되었습니다!");
@@ -208,6 +212,23 @@ export default function RecordModal({
             초기화
           </button>
         </div>
+        <p style={{ marginTop: "15px", marginBottom: "5px" }}>
+          ⭐ 만족도:{" "}
+          <span style={{ fontSize: 24, verticalAlign: "middle" }}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                onClick={() => setRating(star === rating ? 0 : star)} // 같은 별 다시 누르면 취소
+                style={{
+                  cursor: "pointer",
+                  color: star <= rating ? "#ffc107" : "#ddd",
+                }}
+              >
+                ★
+              </span>
+            ))}
+          </span>
+        </p>
         <p style={{ marginTop: "15px", marginBottom: "5px" }}>
           📝 메모:{" "}
           <textarea

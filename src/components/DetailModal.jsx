@@ -156,6 +156,14 @@ export default function DetailModal({
             >
               {record.category || "카테고리 없음"}
             </span>
+            {record.rating > 0 && (
+              <div style={{ marginTop: 6, fontSize: 16, color: "#ffc107" }}>
+                {"★".repeat(record.rating)}
+                <span style={{ color: "#ddd" }}>
+                  {"★".repeat(5 - record.rating)}
+                </span>
+              </div>
+            )}
           </div>
 
           <div style={{ fontSize: "14px", color: "#444", lineHeight: "1.6" }}>

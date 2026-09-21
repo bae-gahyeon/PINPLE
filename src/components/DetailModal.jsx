@@ -100,7 +100,12 @@ export default function DetailModal({
             <img
               src={record.photoUrl}
               alt={record.placeName}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                background: "#000",
+              }}
             />
           ) : (
             <div

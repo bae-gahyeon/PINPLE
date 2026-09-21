@@ -263,7 +263,7 @@ export default function RecordModal({
             style={{
               width: "100%",
               maxHeight: 150,
-              objectFit: "cover",
+              objectFit: "contain",
               borderRadius: 8,
               marginBottom: 10,
             }}

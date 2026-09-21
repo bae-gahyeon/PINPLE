@@ -200,7 +200,23 @@ export default function TimelineTab({ setEditingRecord, setIsModalOpen }) {
             </div>
             <div style={{ fontWeight: "bold", fontSize: 16 }}>
               {r.placeName}
+              {r.category && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: "white",
+                    background: "#0b1031",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                    whiteSpace: "nowrap",
+                    marginLeft: 10,
+                  }}
+                >
+                  {r.category.split(">")[0].trim()}
+                </span>
+              )}
             </div>
+
             <br />
             <div>💰 {r.cost}원</div>
             <div style={{ color: "#555", marginTop: 5 }}>📝 {r.memo}</div>

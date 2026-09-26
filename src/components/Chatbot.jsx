@@ -15,7 +15,6 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
     setIsLoading(true);
 
     try {
-      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       const today = new Date().toISOString().split("T")[0];
 
       const prompt = `
@@ -29,11 +28,11 @@ export default function Chatbot({ currentProfile, onAiParsed }) {
       `;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${API_KEY}`,
+        "https://pinple-nine.vercel.app/api/gemini",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+          body: JSON.stringify({ prompt }),
         },
       );
 
